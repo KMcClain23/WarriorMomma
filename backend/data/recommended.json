@@ -1,14 +1,5 @@
 [
   {
-    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-    "title": "Butcher & Blackbird",
-    "author": "Brynne Weaver",
-    "genre/theme": "Dark Romantic Comedy / Murder",
-    "reason/description": "Rival serial killers form a friends-to-lovers bond; dark humor and morally grey characters",
-    "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Butcher+%26+Blackbird"
-  },
-  {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde0",
     "title": "Credence",
     "author": "Penelope Douglas",
