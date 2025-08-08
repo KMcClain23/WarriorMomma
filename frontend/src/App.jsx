@@ -115,6 +115,22 @@ export default function App() {
     // No need to reload data due to optimistic update
   };
 
+  const handleUpdateBookStatus = async (book, field, value) => {
+    const updatedBook = { ...book, [field]: value };
+
+    // Optimistic UI update
+    setCache(prev => ({
+      ...prev,
+      [active.key]: prev[active.key].map(b => b.id === book.id ? updatedBook : b)
+    }));
+
+    await fetch(`http://localhost:5000${active.endpoint}/${book.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: value })
+    });
+  };
+
   const data = cache[active.key] || [];
 
   return (
@@ -149,7 +165,11 @@ export default function App() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.map((b, i) => (
-              <article key={i} className="card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-gold-ritual/20 hover:shadow-2xl hover:animate-roseBloom">
+              <article key={i} className={`card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-gold-ritual/20 hover:shadow-2xl hover:animate-roseBloom relative ${moveMenuOpenFor === b.id ? 'z-20' : 'z-auto'}`}>
+                <div className="absolute top-2 right-2 flex flex-col gap-2">
+                  {b.isRead && <Badge kind="gold">Read</Badge>}
+                  {b.isTbr && <Badge kind="violet">TBR</Badge>}
+                </div>
                 <img src={b.cover_image_url} alt={b.title} className="w-full h-auto rounded-t-[14px]" />
                 <div className="p-4">
                   <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
@@ -179,7 +199,7 @@ export default function App() {
                 </div>
 
                 {/* actions */}
-                <div className="mt-4 flex gap-2 relative">
+                <div className="mt-4 flex gap-2 relative items-center">
                   <button onClick={() => handleOpenModal(b)} className="btn bg-plum-velvet text-white hover:bg-plum-velvet/80">Edit</button>
                   <button onClick={() => handleDeleteBook(b.id)} className="btn btn-phantom">Delete</button>
                   <div className="relative">
@@ -201,6 +221,9 @@ export default function App() {
                       </div>
                     )}
                   </div>
+                  <div className="flex-grow"></div>
+                  <button onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)} className={`btn btn-phantom ${b.isRead ? 'bg-gold-ritual text-raven-ink' : ''}`}>Read</button>
+                  <button onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)} className={`btn btn-phantom ${b.isTbr ? 'bg-violet-phantom text-white' : ''}`}>TBR</button>
                 </div>
               </article>
             ))}
