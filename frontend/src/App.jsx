@@ -31,6 +31,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
+  const [moveMenuOpenFor, setMoveMenuOpenFor] = useState(null);
 
   useEffect(() => {
     if (!cache[active.key]) {
@@ -93,6 +94,25 @@ export default function App() {
       ...prev,
       [active.key]: prev[active.key].filter(b => b.id !== bookId)
     }));
+  };
+
+  const handleMoveBook = async (book, destinationSection) => {
+    const sourceSection = active.key;
+    const bookToMove = cache[sourceSection].find(b => b.id === book.id);
+
+    // Optimistic UI update
+    setCache(prev => ({
+      ...prev,
+      [sourceSection]: prev[sourceSection].filter(b => b.id !== book.id),
+      [destinationSection]: [...(prev[destinationSection] || []), bookToMove]
+    }));
+
+    await fetch('http://localhost:5000/api/move-book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookId: book.id, sourceSection, destinationSection })
+    });
+    // No need to reload data due to optimistic update
   };
 
   const data = cache[active.key] || [];
@@ -159,9 +179,28 @@ export default function App() {
                 </div>
 
                 {/* actions */}
-                <div className="mt-4 flex gap-2">
+                <div className="mt-4 flex gap-2 relative">
                   <button onClick={() => handleOpenModal(b)} className="btn bg-plum-velvet text-white hover:bg-plum-velvet/80">Edit</button>
                   <button onClick={() => handleDeleteBook(b.id)} className="btn btn-phantom">Delete</button>
+                  <div className="relative">
+                    <button onClick={() => setMoveMenuOpenFor(moveMenuOpenFor === b.id ? null : b.id)} className="btn btn-phantom">Move</button>
+                    {moveMenuOpenFor === b.id && (
+                      <div className="absolute top-full right-0 mt-2 w-48 bg-raven-ink rounded-[14px] shadow-lg z-10">
+                        {tabs.filter(t => t.key !== active.key).map(t => (
+                          <button
+                            key={t.key}
+                            onClick={() => {
+                              handleMoveBook(b, t.key);
+                              setMoveMenuOpenFor(null);
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm text-white hover:bg-plum-velvet"
+                          >
+                            Move to {t.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </article>
             ))}
