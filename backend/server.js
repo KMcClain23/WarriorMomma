@@ -77,5 +77,34 @@ createSectionRoutes('library');
 createSectionRoutes('recommended');
 createSectionRoutes('upcoming');
 
+app.post('/api/move-book', async (req, res) => {
+  const { bookId, sourceSection, destinationSection } = req.body;
+
+  try {
+    // Read source data
+    const sourceData = await readData(sourceSection);
+    const bookToMove = sourceData.find(book => book.id === bookId);
+
+    if (!bookToMove) {
+      return res.status(404).json({ message: 'Book not found in source section' });
+    }
+
+    // Remove book from source
+    const newSourceData = sourceData.filter(book => book.id !== bookId);
+    await writeData(sourceSection, newSourceData);
+
+    // Read destination data
+    const destinationData = await readData(destinationSection);
+
+    // Add book to destination
+    destinationData.push(bookToMove);
+    await writeData(destinationSection, destinationData);
+
+    res.status(200).json({ message: 'Book moved successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error moving book', error: error.message });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`WarriorMomma backend running on http://localhost:${PORT}`));
