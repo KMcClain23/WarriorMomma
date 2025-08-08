@@ -2,27 +2,80 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs/promises');
+const crypto = require('crypto');
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:5173' }));
+const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 
 // Health
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
-// === Add these three routes ===
-app.get('/api/library', (_req, res) =>
-  res.sendFile(path.join(__dirname, 'data', 'library.json'))
-);
-app.get('/api/recommended', (_req, res) =>
-  res.sendFile(path.join(__dirname, 'data', 'recommended.json'))
-);
-app.get('/api/upcoming', (_req, res) =>
-  res.sendFile(path.join(__dirname, 'data', 'upcoming.json'))
-);
+const dataFilePath = (section) => path.join(__dirname, 'data', `${section}.json`);
 
-// Optional: keep your old /api/books if you want
-// app.get('/api/books', ...)
+const readData = async (section) => {
+  const filePath = dataFilePath(section);
+  const data = await fs.readFile(filePath, 'utf-8');
+  return JSON.parse(data);
+};
+
+const writeData = async (section, data) => {
+  const filePath = dataFilePath(section);
+  await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+};
+
+// Generic CRUD routes for a section
+const createSectionRoutes = (section) => {
+  app.get(`/api/${section}`, async (_req, res) => {
+    const data = await readData(section);
+    res.json(data);
+  });
+
+  app.post(`/api/${section}`, async (req, res) => {
+    const data = await readData(section);
+    const newBook = { id: crypto.randomUUID(), ...req.body };
+    data.push(newBook);
+    await writeData(section, data);
+    res.status(201).json(newBook);
+  });
+
+  app.put(`/api/${section}/:id`, async (req, res) => {
+    const { id } = req.params;
+    const data = await readData(section);
+    const index = data.findIndex((book) => book.id === id);
+    if (index === -1) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+    data[index] = { ...data[index], ...req.body };
+    await writeData(section, data);
+    res.json(data[index]);
+  });
+
+  app.delete(`/api/${section}/:id`, async (req, res) => {
+    const { id } = req.params;
+    const data = await readData(section);
+    const newData = data.filter((book) => book.id !== id);
+    if (data.length === newData.length) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+    await writeData(section, newData);
+    res.status(204).send();
+  });
+};
+
+createSectionRoutes('library');
+createSectionRoutes('recommended');
+createSectionRoutes('upcoming');
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`WarriorMomma backend running on http://localhost:${PORT}`));

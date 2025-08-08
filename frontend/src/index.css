@@ -1,21 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Theme tokens (dark by default) */
 :root {
-  --paper: #0b0c0f;
+  --paper: #1a1a1a;
   --muted: #a3a3ad;
   --raven-ink: #0c0d12;
-  --rose-blood: #bb1e3b;
-  --jade-venom: #0fa26f;
+  --rose-blood: #800020;
+  --plum-velvet: #4d2d52;
   --gold-ritual: #c7a559;
+  --jade-venom: #0fa26f;
   --violet-phantom: #7a5cc9;
   --steel-mafia: #2b2f3a;
   --ember-temptation: #e86b2a;
   --noir-neon: #22d3ee;
 
-  --accent: var(--jade-venom);
+  --accent: var(--gold-ritual);
   --accent-2: color-mix(in oklab, var(--accent), white 30%);
   --success: #22c55e;
   --warning: #eab308;
@@ -35,12 +37,14 @@ body {
 }
 
 body {
-  @apply bg-[var(--paper)] text-white font-sans antialiased;
+  @apply bg-[var(--paper)] text-white font-serif antialiased;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 /* Global text readability */
 h1, h2, h3, h4, h5, h6 {
   @apply text-white font-bold;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 p, span, li, div {

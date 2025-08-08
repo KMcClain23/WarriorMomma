@@ -1,5 +1,6 @@
 // frontend/src/App.jsx
 import { useEffect, useState } from 'react';
+import BookModal from './BookModal';
 
 const tabs = [
   { key: 'library', label: 'Collection', endpoint: '/api/library' },
@@ -28,44 +29,92 @@ export default function App() {
   const [active, setActive] = useState(tabs[0]);
   const [cache, setCache] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingBook, setEditingBook] = useState(null);
 
-  useEffect(() => { load(active); /* load first tab */ }, []);
+  useEffect(() => {
+    if (!cache[active.key]) {
+      setLoading(true);
+      fetch(`http://localhost:5000${active.endpoint}`)
+        .then((r) => r.json())
+        .then((data) => {
+          setCache((prev) => ({ ...prev, [active.key]: data }));
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [active, cache]);
 
-  function load(tab) {
-    if (cache[tab.key]) { setActive(tab); return; }
-    setLoading(true);
-    fetch(tab.endpoint)
-      .then(r => r.json())
-      .then(data => {
-        setCache(prev => ({ ...prev, [tab.key]: data }));
-        setActive(tab);
-      })
-      .finally(() => setLoading(false));
+  function handleTabClick(tab) {
+    setActive(tab);
   }
+
+  const handleOpenModal = (book = null) => {
+    setEditingBook(book);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditingBook(null);
+    setIsModalOpen(false);
+  };
+
+  const handleSaveBook = async (bookData) => {
+    const method = editingBook ? 'PUT' : 'POST';
+    const url = editingBook
+      ? `http://localhost:5000${active.endpoint}/${editingBook.id}`
+      : `http://localhost:5000${active.endpoint}`;
+
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookData)
+    });
+    const savedBook = await response.json();
+
+    if (editingBook) {
+      setCache(prev => ({
+        ...prev,
+        [active.key]: prev[active.key].map(b => b.id === editingBook.id ? savedBook : b)
+      }));
+    } else {
+      setCache(prev => ({
+        ...prev,
+        [active.key]: [...prev[active.key], savedBook]
+      }));
+    }
+    handleCloseModal();
+  };
+
+  const handleDeleteBook = async (bookId) => {
+    await fetch(`http://localhost:5000${active.endpoint}/${bookId}`, {
+      method: 'DELETE'
+    });
+    setCache(prev => ({
+      ...prev,
+      [active.key]: prev[active.key].filter(b => b.id !== bookId)
+    }));
+  };
 
   const data = cache[active.key] || [];
 
   return (
-    <div className="min-h-dvh p-6 max-w-6xl mx-auto">
-      <header>
-        <h1 className="text-4xl font-semibold">Moody tales. Bold hearts.</h1>
-        <p className="mt-3 text-white/80">Dark romance, romantasy, and neon noir.</p>
-
-        <div className="mt-6 flex gap-2">
-          <button className="btn btn-raven">Primary</button>
-          <button className="btn btn-blood">Danger</button>
-          <button className="btn btn-phantom">Ghost</button>
+    <div className="min-h-dvh p-6 max-w-6xl mx-auto bg-paper bg-opacity-90">
+      <header className="relative">
+        <div className="absolute top-0 right-0 -z-10">
+          <img src="https://i.imgur.com/c1iP4sD.png" alt="Rose" className="w-64 h-64 object-contain opacity-20" />
         </div>
+        <h1 className="text-5xl font-bold">Moody tales. Bold hearts.</h1>
+        <p className="mt-3 text-white/80 text-lg">Dark romance, romantasy, and neon noir.</p>
 
         {/* Tabs */}
         <div className="mt-8 border-b border-white/10 flex gap-2">
           {tabs.map(t => (
             <button
               key={t.key}
-              className={`px-3 py-2 text-sm rounded-t-[14px] hover:text-white ${
-                active.key === t.key ? 'text-white border-b-2 border-[var(--accent)]' : 'text-white/70'
+              className={`px-4 py-2 text-lg rounded-t-[14px] hover:text-white transition-colors duration-300 ${
+                active.key === t.key ? 'text-white border-b-2 border-gold-ritual' : 'text-white/70'
               }`}
-              onClick={() => load(t)}
+              onClick={() => handleTabClick(t)}
             >
               {t.label}
             </button>
@@ -78,11 +127,11 @@ export default function App() {
         {loading ? (
           <div className="text-white/70">Loading…</div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.map((b, i) => (
-              <article key={i} className="card p-4">
-                <h3 className="font-semibold text-xl">{b.title}</h3>
-                {b.author && <p className="text-white/70">{b.author}</p>}
+              <article key={i} className="card p-4 bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-gold-ritual/20 hover:shadow-2xl hover:animate-roseBloom">
+                <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
+                {b.author && <p className="text-white/80">{b.author}</p>}
 
                 {/* genres */}
                 <div className="mt-3 flex gap-2 flex-wrap">
@@ -108,14 +157,29 @@ export default function App() {
 
                 {/* actions */}
                 <div className="mt-4 flex gap-2">
-                  <button className="btn btn-raven">Add to TBR</button>
-                  <button className="btn btn-phantom">Details</button>
+                  <button onClick={() => handleOpenModal(b)} className="btn bg-plum-velvet text-white hover:bg-plum-velvet/80">Edit</button>
+                  <button onClick={() => handleDeleteBook(b.id)} className="btn btn-phantom">Delete</button>
                 </div>
               </article>
             ))}
           </div>
         )}
       </section>
+
+      <button
+        onClick={() => handleOpenModal()}
+        className="fixed bottom-8 right-8 w-16 h-16 bg-gold-ritual text-raven-ink rounded-full shadow-lg flex items-center justify-center text-4xl font-bold"
+      >
+        +
+      </button>
+
+      {isModalOpen && (
+        <BookModal
+          book={editingBook}
+          onClose={handleCloseModal}
+          onSave={handleSaveBook}
+        />
+      )}
     </div>
   );
 }
