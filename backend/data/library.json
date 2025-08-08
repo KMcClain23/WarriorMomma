@@ -4,13 +4,13 @@
     "title": "God of Fury",
     "author": "Rina Kent",
     "owned": "Yes",
-    "isRead": false,
+    "isRead": true,
     "isTbr": false,
     "genre": "Dark Contemporary Romance",
     "release_date": "2023-12-06",
     "notes": "Standalone, suspense",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/14858421-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=God+of+Fury"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
@@ -23,7 +23,7 @@
     "release_date": "2022-07-22",
     "notes": "Standalone",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/12860070-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Does+It+Hurt?"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
@@ -36,7 +36,7 @@
     "release_date": "2015-05-05",
     "notes": "Feyre's journey",
     "spice_level": "Medium",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8738585-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=A+Court+of+Thorns+and+Roses"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
@@ -49,7 +49,7 @@
     "release_date": "2024-05-21",
     "notes": "Ravenhood #1",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/13246558-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Flock"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
@@ -62,7 +62,7 @@
     "release_date": "2024-08-20",
     "notes": "Ravenhood #2",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/13528285-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Exodus"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d484",
@@ -74,7 +74,8 @@
     "genre": "Dark Romance",
     "release_date": "2024-10-22",
     "notes": "Ravenhood #3",
-    "spice_level": "High"
+    "spice_level": "High",
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Finish+Line"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d485",
@@ -86,7 +87,8 @@
     "genre": "Dark Romance",
     "release_date": "2024-12-24",
     "notes": "Ravenhood Legacy",
-    "spice_level": "High"
+    "spice_level": "High",
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=One+Last+Rainy+Day"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d486",
@@ -98,7 +100,8 @@
     "genre": "Dark Romance",
     "release_date": "2025-06-24",
     "notes": "Ravenhood Legacy #2",
-    "spice_level": "High"
+    "spice_level": "High",
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Severed+Heart"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d487",
@@ -111,7 +114,7 @@
     "release_date": "2024-08-06",
     "notes": "Into Darkness #1",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/14641117-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Lights+Out"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d488",
@@ -124,7 +127,7 @@
     "release_date": "2025-06-10",
     "notes": "Into Darkness #2",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/15093928-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Caught+Up"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d489",
@@ -137,7 +140,7 @@
     "release_date": "2020-07-10",
     "notes": "Standalone",
     "spice_level": "Extra High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/14612078-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Den+of+Vipers"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d490",
@@ -149,7 +152,8 @@
     "genre": "Dark Fantasy/Romance",
     "release_date": "2025-02-25",
     "notes": "Standalone",
-    "spice_level": "High"
+    "spice_level": "High",
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Kiss+of+the+Basilisk"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d491",
@@ -162,7 +166,7 @@
     "release_date": "2023-04-07",
     "notes": "Standalone",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/14631950-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Sacrifice"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d492",
@@ -174,7 +178,8 @@
     "genre": "New Adult Dark Taboo",
     "release_date": "2022-11-30",
     "notes": "Standalone",
-    "spice_level": "High"
+    "spice_level": "High",
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Sinner"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d493",
@@ -187,7 +192,7 @@
     "release_date": "2025-01-14",
     "notes": "Standalone",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/15089504-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Phantom"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d494",
@@ -200,7 +205,7 @@
     "release_date": "2020-11-25",
     "notes": "Wilde Boys #1",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/13334391-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Gravity"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d495",
@@ -213,7 +218,7 @@
     "release_date": "2021-03-25",
     "notes": "Standalone",
     "spice_level": "Extra High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/13330266-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Free+Fall"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d496",
@@ -226,7 +231,7 @@
     "release_date": "2021-03-16",
     "notes": "Standalone",
     "spice_level": "High",
-    "coverUrl": "https://covers.openlibrary.org/b/id/10721305-L.jpg"
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Brit"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d497",
@@ -238,6 +243,16 @@
     "genre": "Dark 'Why-Choose' Romance",
     "release_date": "2025-07-15",
     "notes": "Devil's Backbone #2",
-    "spice_level": "High"
+    "spice_level": "High",
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Watch+Your+Back"
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "title": "Butcher & Blackbird",
+    "author": "Brynne Weaver",
+    "genre/theme": "Dark Romantic Comedy / Murder",
+    "reason/description": "Rival serial killers form a friends-to-lovers bond; dark humor and morally grey characters",
+    "spice_level": "High",
+    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Butcher+%26+Blackbird"
   }
 ]
