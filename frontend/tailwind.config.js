@@ -4,6 +4,9 @@ module.exports = {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
+    fontFamily: {
+      serif: ['Cormorant Garamond', 'serif'],
+    },
     extend: {
       colors: {
         ink: 'var(--raven-ink)',
@@ -13,6 +16,7 @@ module.exports = {
         accent2: 'var(--accent-2)',
         danger: 'var(--rose-blood)',
         'rose-blood': 'var(--rose-blood)',
+        'plum-velvet': 'var(--plum-velvet)',
         'jade-venom': 'var(--jade-venom)',
         'raven-ink': 'var(--raven-ink)',
         'gold-ritual': 'var(--gold-ritual)',
