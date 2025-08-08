@@ -1,0 +1,14 @@
+{
+  "name": "warriormomma-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "concurrently \"npm --prefix backend run start\" \"npm --prefix frontend run preview\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "warriormomma",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend for WarriorMomma book collection app",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "vite": "^5.3.4"
+  }
+}

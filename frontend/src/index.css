@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens (dark by default) */
+:root {
+  --paper: #0b0c0f;
+  --muted: #a3a3ad;
+  --raven-ink: #0c0d12;
+  --rose-blood: #bb1e3b;
+  --jade-venom: #0fa26f;
+  --gold-ritual: #c7a559;
+  --violet-phantom: #7a5cc9;
+  --steel-mafia: #2b2f3a;
+  --ember-temptation: #e86b2a;
+  --noir-neon: #22d3ee;
+
+  --accent: var(--jade-venom);
+  --accent-2: color-mix(in oklab, var(--accent), white 30%);
+  --success: #22c55e;
+  --warning: #eab308;
+  color-scheme: dark;
+}
+
+.light {
+  --paper: #f7f7fb;
+  --muted: #4a4a55;
+  --raven-ink: #0e0f14;
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-[var(--paper)] text-white font-sans antialiased;
+}
+
+/* Global text readability */
+h1, h2, h3, h4, h5, h6 {
+  @apply text-white font-bold;
+}
+
+p, span, li, div {
+  @apply text-white;
+}
+
+.text-muted {
+  @apply text-[var(--muted)];
+}
+
+/* Buttons */
+.btn {
+  @apply inline-flex items-center justify-center rounded-[14px] px-4 py-2 text-sm font-medium transition-all ease-velvet;
+}
+.btn-raven {
+  @apply bg-[var(--raven-ink)] text-white hover:bg-black/80 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)];
+}
+.btn-blood {
+  @apply bg-[var(--rose-blood)] text-white hover:brightness-110 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)];
+}
+.btn-phantom {
+  @apply bg-transparent text-white border border-white/20 hover:border-white/40;
+}
+
+/* Cards and badges */
+.card {
+  @apply rounded-[14px] bg-[linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03))] backdrop-blur border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)] p-4;
+}
+
+.card h3 {
+  @apply text-white font-semibold text-lg;
+}
+
+.card p {
+  @apply text-white/90 text-sm;
+}
+
+.badge {
+  @apply inline-flex items-center gap-1 rounded-[999px] px-3 py-1 text-xs font-medium border border-white/10 text-white;
+}
+.badge-rose {
+  background: color-mix(in oklab, var(--rose-blood), transparent 50%);
+}
+.badge-jade {
+  background: color-mix(in oklab, var(--jade-venom), transparent 50%);
+}
+.badge-gold {
+  background: color-mix(in oklab, var(--gold-ritual), transparent 50%);
+  color: #2c2414;
+}
+.badge-violet {
+  background: color-mix(in oklab, var(--violet-phantom), transparent 50%);
+}
+.badge-steel {
+  background: color-mix(in oklab, var(--steel-mafia), transparent 50%);
+}
+.badge-neon {
+  background: color-mix(in oklab, var(--noir-neon), transparent 50%);
+  color: #06272c;
+}
+
+/* Background utilities */
+.bg-basilisk {
+  --s: 26px;
+  --c1: color-mix(in oklab, var(--jade-venom), black 40%);
+  --c2: color-mix(in oklab, var(--jade-venom), white 5%);
+  background: radial-gradient(circle at 50% 0, var(--c1) 20%, transparent 21%) calc(var(--s) / 2)
+      calc(var(--s) / 2),
+    radial-gradient(circle at 0 50%, var(--c2) 20%, transparent 21%) 0 0 / var(--s) var(--s);
+  background-color: #061912;
+}
+.bg-neon-rain {
+  background-image: radial-gradient(
+      1px 1px at 20px 30px,
+      rgba(255, 255, 255, 0.08) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      1px 1px at 40px 60px,
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px
+    );
+}
+
+/* Motion and focus */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
