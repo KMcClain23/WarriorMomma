@@ -7,6 +7,8 @@
     "genre/category": "Dark Hockey Romance",
     "spice_level": "High",
     "notes": "Standalone dark enemies-to-lovers story",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Sweet+Venom"
   },
   {
@@ -17,6 +19,8 @@
     "genre/category": "Dark Romance",
     "spice_level": "High",
     "notes": "Conclusion to the dark duet",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Painted+Sinners"
   },
   {
@@ -27,6 +31,8 @@
     "genre/category": "Mafia Dark Romance",
     "spice_level": "High",
     "notes": "Part of the Manhattan Ruthless series",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Mason%27s+Story"
   },
   {
@@ -37,6 +43,8 @@
     "genre/category": "Dark Romantic Suspense",
     "spice_level": "High",
     "notes": "New standalone by the author of Does It Hurt?",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=MDD"
   },
   {
@@ -47,6 +55,8 @@
     "genre/category": "MM Mafia Romance",
     "spice_level": "Extra High",
     "notes": "Male–male dark rivals romance set in Legacy of Gods world",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Hunt+the+Villain"
   },
   {
@@ -57,6 +67,8 @@
     "genre/category": "Dark Romantasy",
     "spice_level": "Medium-High",
     "notes": "Dragonbond and Viking vibes",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Upon+Buried+Embers"
   },
   {
@@ -67,6 +79,8 @@
     "genre/category": "Dark Romance",
     "spice_level": "High",
     "notes": "Part of the Kings of Sin series",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=King+of+Gluttony"
   },
   {
@@ -77,6 +91,8 @@
     "genre/category": "Dark Romance",
     "spice_level": "Medium-High",
     "notes": "Emotional intensity expected",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Valeria+and+Enzo%27s+Story"
   },
   {
@@ -87,6 +103,8 @@
     "genre/category": "Gothic Romantasy",
     "spice_level": "Medium",
     "notes": "Sorceress and villain in gothic setting",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Arkana"
   },
   {
@@ -97,6 +115,8 @@
     "genre/category": "Dark Sports Romance",
     "spice_level": "High",
     "notes": "Final Vipers installment",
+    "isRead": false,
+    "isTbr": false,
     "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Vipers+%233"
   }
 ]
