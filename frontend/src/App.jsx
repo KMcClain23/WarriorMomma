@@ -129,9 +129,12 @@ export default function App() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.map((b, i) => (
-              <article key={i} className="card p-4 bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-gold-ritual/20 hover:shadow-2xl hover:animate-roseBloom">
-                <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
-                {b.author && <p className="text-white/80">{b.author}</p>}
+              <article key={i} className="card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-gold-ritual/20 hover:shadow-2xl hover:animate-roseBloom">
+                <img src={b.cover_image_url} alt={b.title} className="w-full h-auto rounded-t-[14px]" />
+                <div className="p-4">
+                  <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
+                  {b.author && <p className="text-white/80">{b.author}</p>}
+                </div>
 
                 {/* genres */}
                 <div className="mt-3 flex gap-2 flex-wrap">
