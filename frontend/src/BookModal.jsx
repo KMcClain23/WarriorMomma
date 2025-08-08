@@ -13,10 +13,22 @@ export default function BookModal({ book, onClose, onSave }) {
 
   useEffect(() => {
     if (book) {
+      // Normalize genre data into an array
+      let genresArray = [];
+      if (Array.isArray(book.genres)) {
+        genresArray = book.genres;
+      } else if (book.genre) {
+        genresArray = [book.genre];
+      } else if (book['genre/theme']) {
+        genresArray = [book['genre/theme']];
+      } else if (book['genre/category']) {
+        genresArray = [book['genre/category']];
+      }
+
       setFormData({
         title: book.title || '',
         author: book.author || '',
-        genres: book.genres || [],
+        genres: genresArray,
         spice_level: book.spice_level || '',
         release_date: book.release_date || '',
         notes: book.notes || ''
