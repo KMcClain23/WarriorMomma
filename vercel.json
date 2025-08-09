@@ -1,13 +1,16 @@
 {
-  "functions": {
-    "backend/**/*": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/library",
       "destination": "/frontend/data/library.json"
+    },
+    {
+      "source": "/api/recommended",
+      "destination": "/frontend/data/recommended.json"
+    },
+    {
+      "source": "/api/upcoming",
+      "destination": "/frontend/data/upcoming.json"
     }
   ]
 }
