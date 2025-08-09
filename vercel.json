@@ -1,16 +1,12 @@
 {
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/library",
-      "destination": "/backend/data/library.json"
-    },
-    {
-      "source": "/api/recommended",
-      "destination": "/backend/data/recommended.json"
-    },
-    {
-      "source": "/api/upcoming",
-      "destination": "/backend/data/upcoming.json"
+      "src": "backend/server.js",
+      "use": "@vercel/node",
+      "config": { "includeFiles": ["backend/data/**"] }
     }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/backend/server.js" }
   ]
 }
