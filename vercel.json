@@ -1,24 +1,9 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "installCommand": "pnpm install",
-        "buildCommand": "pnpm run build",
-        "distDir": "dist"
-      }
-    },
-    {
-      "src": "backend/server.js",
-      "use": "@vercel/node"
-    }
+    { "src": "backend/server.js", "use": "@vercel/node" }
   ],
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "backend/server.js"
-    }
+    { "source": "/(.*)", "destination": "backend/server.js" }
   ]
 }
