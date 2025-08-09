@@ -167,8 +167,8 @@ export default function App() {
             {data.map((b, i) => (
               <article key={i} className={`card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-glow relative ${moveMenuOpenFor === b.id ? 'z-20' : 'z-auto'}`}>
                 <div className="absolute top-2 right-2 flex gap-2 z-10">
-                  <button onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)} className={`btn btn-phantom text-xs px-2 py-1 ${b.isRead ? 'bg-gold-ritual text-raven-ink' : 'bg-raven-ink/50'}`}>Read</button>
-                  <button onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)} className={`btn btn-phantom text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white' : 'bg-raven-ink/50'}`}>TBR</button>
+                  <button onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)} className={`btn text-xs px-2 py-1 ${b.isRead ? 'bg-gold-ritual text-raven-ink border-transparent' : 'btn-phantom'}`}>Read</button>
+                  <button onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)} className={`btn text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white border-transparent' : 'btn-phantom'}`}>TBR</button>
                 </div>
                 <img src={b.cover_image_url} alt={b.title} className="w-full h-auto rounded-t-[14px]" />
                 <div className="p-4">
