@@ -7,22 +7,9 @@ const prisma = new PrismaClient(); // Initialize Prisma Client
 
 app.use(express.json());
 
-// This now includes your live frontend URL to fix the CORS error
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'https://warrior-momma-five.vercel.app' 
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+// --- TEMPORARY DEBUGGING STEP ---
+// This allows requests from ANY origin to bypass CORS issues.
+app.use(cors());
 
 // Health check route
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
@@ -31,19 +18,27 @@ app.get('/api/health', (_req, res) => res.json({ ok: true }));
 const createSectionRoutes = (section) => {
   // GET all books in a section
   app.get(`/api/${section}`, async (_req, res) => {
-    const books = await prisma.book.findMany({
-      where: { section: section },
-      orderBy: { createdAt: 'desc' }
-    });
-    res.json(books);
+    try {
+      const books = await prisma.book.findMany({
+        where: { section: section },
+        orderBy: { createdAt: 'desc' }
+      });
+      res.json(books);
+    } catch (error) {
+      res.status(500).json({ message: `Error fetching ${section}`, error: error.message });
+    }
   });
 
   // POST a new book to a section
   app.post(`/api/${section}`, async (req, res) => {
-    const newBook = await prisma.book.create({
-      data: { ...req.body, section: section }
-    });
-    res.status(201).json(newBook);
+    try {
+      const newBook = await prisma.book.create({
+        data: { ...req.body, section: section }
+      });
+      res.status(201).json(newBook);
+    } catch (error) {
+      res.status(500).json({ message: `Error creating book in ${section}`, error: error.message });
+    }
   });
 
   // PUT (update) a book
