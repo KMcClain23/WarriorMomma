@@ -3,7 +3,12 @@
   "builds": [
     {
       "src": "frontend/package.json",
-      "use": "@vercel/static-build"
+      "use": "@vercel/static-build",
+      "config": {
+        "installCommand": "pnpm install",
+        "buildCommand": "pnpm run build",
+        "distDir": "dist"
+      }
     },
     {
       "src": "backend/server.js",
