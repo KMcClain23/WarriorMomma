@@ -1,27 +1,5 @@
 [
   {
-    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-    "title": "Butcher & Blackbird",
-    "author": "Brynne Weaver",
-    "genre/theme": "Dark Romantic Comedy / Murder",
-    "reason/description": "Rival serial killers form a friends-to-lovers bond; dark humor and morally grey characters",
-    "spice_level": "High",
-    "isRead": false,
-    "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/14434373-L.jpg"
-  },
-  {
-    "id": "a1b2c3d4-e5f6-7890-1234-567890abcde0",
-    "title": "Credence",
-    "author": "Penelope Douglas",
-    "genre/theme": "Forbidden Taboo Romance",
-    "reason/description": "Tiernan becomes entangled with her step-uncle and his sons in a remote cabin, blurring lines between family and desire",
-    "spice_level": "Extra High",
-    "isRead": false,
-    "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/11311896-L.jpg"
-  },
-  {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde1",
     "title": "There Are No Saints",
     "author": "Sophie Lark",
@@ -29,7 +7,9 @@
     "reason/description": "A sculptor stalks a woman he becomes obsessed with, mixing art and twisted passion",
     "spice_level": "High",
     "isRead": false,
-    "isTbr": false
+    "isTbr": false,
+    "coverUrl": "https://books.google.com/books/content?id=nwlzzwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "cover_image_url": "https://books.google.com/books/content?id=nwlzzwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde2",
@@ -39,7 +19,9 @@
     "reason/description": "Heroine on Everland island caught between two morally ambiguous men; enemies-to-lovers vibe",
     "spice_level": "High",
     "isRead": false,
-    "isTbr": false
+    "isTbr": false,
+    "coverUrl": "https://books.google.com/books/content?id=pFG10AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "cover_image_url": "https://books.google.com/books/content?id=pFG10AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde3",
@@ -50,7 +32,8 @@
     "spice_level": "Medium-High",
     "isRead": false,
     "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/13451855-L.jpg"
+    "coverUrl": "https://covers.openlibrary.org/b/id/13451855-L.jpg",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/13451855-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde4",
@@ -61,18 +44,8 @@
     "spice_level": "Medium",
     "isRead": false,
     "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/12940491-L.jpg"
-  },
-  {
-    "id": "a1b2c3d4-e5f6-7890-1234-567890abcde5",
-    "title": "Mindf*ck Series",
-    "author": "S.T. Abby",
-    "genre/theme": "Dark Romantic Suspense",
-    "reason/description": "Serial killer heroine falls for the FBI profiler hunting her; intense cat-and-mouse game",
-    "spice_level": "Extra High",
-    "isRead": false,
-    "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/12552946-L.jpg"
+    "coverUrl": "https://covers.openlibrary.org/b/id/12940491-L.jpg",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/12940491-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde6",
@@ -83,7 +56,8 @@
     "spice_level": "Medium-High",
     "isRead": false,
     "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/10657632-L.jpg"
+    "coverUrl": "https://covers.openlibrary.org/b/id/10657632-L.jpg",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/10657632-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde7",
@@ -94,7 +68,8 @@
     "spice_level": "High",
     "isRead": false,
     "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/12194497-L.jpg"
+    "coverUrl": "https://covers.openlibrary.org/b/id/12194497-L.jpg",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/12194497-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde8",
@@ -105,6 +80,7 @@
     "spice_level": "Mild-Moderate",
     "isRead": false,
     "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/10526129-L.jpg"
+    "coverUrl": "https://covers.openlibrary.org/b/id/10526129-L.jpg",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/10526129-L.jpg"
   }
 ]

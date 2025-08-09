@@ -25,6 +25,14 @@ function spiceBadge(spice) {
   return <Badge kind="rose">Spice {s}</Badge>;
 }
 
+// Resolve a usable cover URL from either key
+function getCover(book) {
+  const url = book?.coverUrl || book?.cover_image_url || '';
+  if (!url) return '';
+  // normalize to https and strip google curl param
+  return url.replace(/^http:/, 'https:').replace(/&edge=curl/g, '');
+}
+
 export default function App() {
   const [active, setActive] = useState(tabs[0]);
   const [cache, setCache] = useState({});
@@ -112,7 +120,6 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookId: book.id, sourceSection, destinationSection })
     });
-    // No need to reload data due to optimistic update
   };
 
   const handleUpdateBookStatus = async (book, field, value) => {
@@ -132,6 +139,7 @@ export default function App() {
   };
 
   const data = cache[active.key] || [];
+  const fallback = "/images/cover-fallback.svg"; // put a simple svg/png in frontend/public/images
 
   return (
     <div className="min-h-dvh p-6 max-w-6xl mx-auto bg-paper bg-opacity-90">
@@ -164,72 +172,103 @@ export default function App() {
           <div className="text-white/70">Loading…</div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.map((b, i) => (
-              <article key={i} className={`card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-glow relative ${moveMenuOpenFor === b.id ? 'z-20' : 'z-auto'}`}>
-                <div className="absolute top-2 right-2 flex gap-2 z-10">
-                  <button onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)} className={`btn text-xs px-2 py-1 ${b.isRead ? 'bg-gold-ritual text-raven-ink border-transparent' : 'btn-phantom'}`}>Read</button>
-                  <button onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)} className={`btn text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white border-transparent' : 'btn-phantom'}`}>TBR</button>
-                </div>
-                {b.coverUrl ? (
-                  <img src={b.coverUrl} alt={b.title} className="w-full h-auto rounded-t-[14px] aspect-[2/3] object-cover" />
-                ) : (
-                  <div className="w-full aspect-[2/3] bg-raven-ink rounded-t-[14px] flex items-center justify-center p-4">
-                    <h3 className="text-gold-ritual text-center font-semibold">{b.title}</h3>
-                  </div>
-                )}
-                <div className="p-4">
-                  <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
-                  {b.author && <p className="text-white/80">{b.author}</p>}
-
-                  {/* genres */}
-                  <div className="mt-3 flex gap-2 flex-wrap">
-                    {Array.isArray(b.genres)
-                      ? b.genres.map((g, j) => <Badge key={j}>{g}</Badge>)
-                      : b.genre
-                        ? <Badge>{b.genre}</Badge>
-                        : b['genre/theme']
-                          ? <Badge>{b['genre/theme']}</Badge>
-                          : b['genre/category']
-                            ? <Badge>{b['genre/category']}</Badge>
-                            : null}
-                    {/* spice */}
-                    {spiceBadge(b.spice_level)}
+            {data.map((b, i) => {
+              const cover = getCover(b);
+              return (
+                <article
+                  key={i}
+                  className={`card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-glow relative ${moveMenuOpenFor === b.id ? 'z-20' : 'z-auto'}`}
+                >
+                  {/* Top-right actions */}
+                  <div className="absolute top-2 right-2 flex gap-2 z-10">
+                    <button
+                      onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)}
+                      className={`btn text-xs px-2 py-1 ${b.isRead ? 'bg-gold-ritual text-raven-ink border-transparent' : 'btn-phantom'}`}
+                    >
+                      Read
+                    </button>
+                    <button
+                      onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)}
+                      className={`btn text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white border-transparent' : 'btn-phantom'}`}
+                    >
+                      TBR
+                    </button>
                   </div>
 
-                  {/* dates / notes / reason */}
-                  <div className="mt-3 text-sm text-white/70 space-y-1">
-                    {b.release_date && <div>Release: {b.release_date}</div>}
-                    {b['reason/description'] && <div className="text-white/80">{b['reason/description']}</div>}
-                    {b.notes && <div className="text-white/60">{b.notes}</div>}
-                  </div>
+                  {/* Cover or fallback title */}
+                  {cover ? (
+                    <img
+                      src={cover}
+                      alt={b.title}
+                      className="w-full h-auto rounded-t-[14px] aspect-[2/3] object-cover"
+                      onError={(e) => {
+                        // prevent infinite loop if fallback 404s
+                        if (e.currentTarget.dataset.fallbackApplied) return;
+                        e.currentTarget.dataset.fallbackApplied = '1';
+                        e.currentTarget.src = fallback;
+                      }}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full aspect-[2/3] bg-raven-ink rounded-t-[14px] flex items-center justify-center p-4">
+                      <h3 className="text-gold-ritual text-center font-semibold">{b.title}</h3>
+                    </div>
+                  )}
 
-                  {/* actions */}
-                  <div className="mt-4 flex gap-2 relative items-center">
-                    <button onClick={() => handleOpenModal(b)} className="btn bg-plum-velvet text-white hover:bg-plum-velvet/80">Edit</button>
-                    <button onClick={() => handleDeleteBook(b.id)} className="btn btn-phantom">Delete</button>
-                    <div className="relative">
-                      <button onClick={() => setMoveMenuOpenFor(moveMenuOpenFor === b.id ? null : b.id)} className="btn btn-phantom">Move</button>
-                      {moveMenuOpenFor === b.id && (
-                        <div className="absolute top-full right-0 mt-2 w-48 bg-raven-ink rounded-[14px] shadow-lg z-10">
-                          {tabs.filter(t => t.key !== active.key).map(t => (
-                            <button
-                              key={t.key}
-                              onClick={() => {
-                                handleMoveBook(b, t.key);
-                                setMoveMenuOpenFor(null);
-                              }}
-                              className="w-full text-left px-4 py-2 text-sm text-white hover:bg-plum-velvet"
-                            >
-                              Move to {t.label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                  <div className="p-4">
+                    <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
+                    {b.author && <p className="text-white/80">{b.author}</p>}
+
+                    {/* genres */}
+                    <div className="mt-3 flex gap-2 flex-wrap">
+                      {Array.isArray(b.genres)
+                        ? b.genres.map((g, j) => <Badge key={j}>{g}</Badge>)
+                        : b.genre
+                          ? <Badge>{b.genre}</Badge>
+                          : b['genre/theme']
+                            ? <Badge>{b['genre/theme']}</Badge>
+                            : b['genre/category']
+                              ? <Badge>{b['genre/category']}</Badge>
+                              : null}
+                      {/* spice */}
+                      {spiceBadge(b.spice_level)}
+                    </div>
+
+                    {/* dates / notes / reason */}
+                    <div className="mt-3 text-sm text-white/70 space-y-1">
+                      {b.release_date && <div>Release: {b.release_date}</div>}
+                      {b['reason/description'] && <div className="text-white/80">{b['reason/description']}</div>}
+                      {b.notes && <div className="text-white/60">{b.notes}</div>}
+                    </div>
+
+                    {/* actions */}
+                    <div className="mt-4 flex gap-2 relative items-center">
+                      <button onClick={() => handleOpenModal(b)} className="btn bg-plum-velvet text-white hover:bg-plum-velvet/80">Edit</button>
+                      <button onClick={() => handleDeleteBook(b.id)} className="btn btn-phantom">Delete</button>
+                      <div className="relative">
+                        <button onClick={() => setMoveMenuOpenFor(moveMenuOpenFor === b.id ? null : b.id)} className="btn btn-phantom">Move</button>
+                        {moveMenuOpenFor === b.id && (
+                          <div className="absolute top-full right-0 mt-2 w-48 bg-raven-ink rounded-[14px] shadow-lg z-10">
+                            {tabs.filter(t => t.key !== active.key).map(t => (
+                              <button
+                                key={t.key}
+                                onClick={() => {
+                                  handleMoveBook(b, t.key);
+                                  setMoveMenuOpenFor(null);
+                                }}
+                                className="w-full text-left px-4 py-2 text-sm text-white hover:bg-plum-velvet"
+                              >
+                                Move to {t.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>

@@ -8,7 +8,9 @@
     "spice_level": "High",
     "notes": "Standalone dark enemies-to-lovers story",
     "isRead": false,
-    "isTbr": false
+    "isTbr": false,
+    "coverUrl": "https://books.google.com/books/content?id=sntfEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "cover_image_url": "https://books.google.com/books/content?id=sntfEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde0",
@@ -30,7 +32,9 @@
     "spice_level": "High",
     "notes": "Part of the Manhattan Ruthless series",
     "isRead": false,
-    "isTbr": false
+    "isTbr": false,
+    "coverUrl": "https://books.google.com/books/content?id=PD1X0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "cover_image_url": "https://books.google.com/books/content?id=PD1X0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde2",
@@ -74,7 +78,9 @@
     "spice_level": "High",
     "notes": "Part of the Kings of Sin series",
     "isRead": false,
-    "isTbr": false
+    "isTbr": false,
+    "coverUrl": "https://books.google.com/books/content?id=SdvR0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "cover_image_url": "https://books.google.com/books/content?id=SdvR0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde6",
@@ -97,7 +103,8 @@
     "notes": "Sorceress and villain in gothic setting",
     "isRead": false,
     "isTbr": false,
-    "coverUrl": "https://covers.openlibrary.org/b/id/14633237-L.jpg"
+    "coverUrl": "https://covers.openlibrary.org/b/id/14633237-L.jpg",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/14633237-L.jpg"
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde8",
@@ -108,6 +115,8 @@
     "spice_level": "High",
     "notes": "Final Vipers installment",
     "isRead": false,
-    "isTbr": false
+    "isTbr": false,
+    "coverUrl": "https://books.google.com/books/content?id=sntfEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "cover_image_url": "https://books.google.com/books/content?id=sntfEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
   }
 ]
