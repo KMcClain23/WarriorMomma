@@ -2,6 +2,7 @@
   "name": "warriormomma",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Frontend for WarriorMomma book collection app",
   "scripts": {
     "dev": "vite",
