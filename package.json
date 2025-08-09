@@ -4,7 +4,9 @@
   "scripts": {
     "build": "prisma generate",
     "dev": "pnpm --parallel --stream -r dev",
-    "start": "pnpm --parallel --stream -r start"
+    "start": "pnpm --parallel --stream -r start",
+    "postinstall": "prisma generate",
+    "seed": "prisma db seed"
   },
   "prisma": {
     "schema": "backend/prisma/schema.prisma"
