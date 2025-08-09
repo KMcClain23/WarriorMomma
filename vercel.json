@@ -3,5 +3,11 @@
     "backend/**/*": {
       "runtime": "nodejs18.x"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/library",
+      "destination": "/frontend/data/library.json"
+    }
+  ]
 }
