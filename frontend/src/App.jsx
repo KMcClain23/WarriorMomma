@@ -36,7 +36,7 @@ export default function App() {
   useEffect(() => {
     if (!cache[active.key]) {
       setLoading(true);
-      fetch(`http://localhost:5000${active.endpoint}`)
+      fetch(active.endpoint)
         .then((r) => r.json())
         .then((data) => {
           setCache((prev) => ({ ...prev, [active.key]: data }));
@@ -62,8 +62,8 @@ export default function App() {
   const handleSaveBook = async (bookData) => {
     const method = editingBook ? 'PUT' : 'POST';
     const url = editingBook
-      ? `http://localhost:5000${active.endpoint}/${editingBook.id}`
-      : `http://localhost:5000${active.endpoint}`;
+      ? `${active.endpoint}/${editingBook.id}`
+      : active.endpoint;
 
     const response = await fetch(url, {
       method,
@@ -87,7 +87,7 @@ export default function App() {
   };
 
   const handleDeleteBook = async (bookId) => {
-    await fetch(`http://localhost:5000${active.endpoint}/${bookId}`, {
+    await fetch(`${active.endpoint}/${bookId}`, {
       method: 'DELETE'
     });
     setCache(prev => ({
@@ -107,7 +107,7 @@ export default function App() {
       [destinationSection]: [...(prev[destinationSection] || []), bookToMove]
     }));
 
-    await fetch('http://localhost:5000/api/move-book', {
+    await fetch('/api/move-book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookId: book.id, sourceSection, destinationSection })
@@ -124,7 +124,7 @@ export default function App() {
       [active.key]: prev[active.key].map(b => b.id === book.id ? updatedBook : b)
     }));
 
-    await fetch(`http://localhost:5000${active.endpoint}/${book.id}`, {
+    await fetch(`${active.endpoint}/${book.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ [field]: value })

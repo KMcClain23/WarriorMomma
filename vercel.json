@@ -1,8 +1,7 @@
 {
-  "build": {
-    "env": {
-      "DATABASE_URL": "@db_url",
-      "DIRECT_URL": "@direct_url"
+  "functions": {
+    "backend/**/*": {
+      "runtime": "nodejs18.x"
     }
   }
 }
