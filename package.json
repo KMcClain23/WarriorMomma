@@ -9,6 +9,13 @@
     "start": "concurrently \"npm --prefix backend run start\" \"npm --prefix frontend run preview\""
   },
   "devDependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^9.0.1",
+    "prisma": "^6.13.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.13.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
   }
 }

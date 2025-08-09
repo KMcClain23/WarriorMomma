@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       const books = await prisma.book.findMany({
         where: { section },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' }
       });
       return res.status(200).json(books);
     }

@@ -11,7 +11,7 @@ export function normalizeIncoming(body, section) {
     ? body.genres
     : String(body.genre || body['genre/theme'] || body['genre/category'] || '')
         .split(',')
-        .map(s => s.trim())
+        .map((s) => s.trim())
         .filter(Boolean);
 
   const toNum = (v) => {

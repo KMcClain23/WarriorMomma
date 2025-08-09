@@ -1,11 +1,9 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  // Vercel adds DATABASE_URL automatically when you link the DB.
   url      = env("DATABASE_URL")
 }
 
@@ -22,8 +20,8 @@ model Book {
 
   title           String
   author          String?   @db.Text
-  genres          String[]  @db.Text      // TEXT[] in Postgres
-  spice           Int       @default(0)   // 0..5
+  genres          String[]  @db.Text
+  spice           Int       @default(0)
   isRead          Boolean   @default(false)
   isTbr           Boolean   @default(false)
   release_date    String?   @db.Text

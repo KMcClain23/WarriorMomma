@@ -25,5 +25,13 @@
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"
+  },
+  "pnpm": {
+    "allowedBuiltDependencies": [
+      "@prisma/client",
+      "prisma",
+      "@prisma/engines",
+      "esbuild"
+    ]
   }
 }

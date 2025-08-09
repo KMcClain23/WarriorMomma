@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
     await prisma.book.update({
       where: { id: bookId },
-      data: { section: destinationSection },
+      data: { section: destinationSection }
     });
 
     return res.status(200).json({ message: 'Book moved successfully' });
