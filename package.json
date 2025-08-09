@@ -2,6 +2,7 @@
   "name": "warriormomma-monorepo",
   "private": true,
   "scripts": {
+    "build": "prisma generate",
     "dev": "pnpm --parallel --stream -r dev",
     "start": "pnpm --parallel --stream -r start"
   },
