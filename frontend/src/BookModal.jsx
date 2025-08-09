@@ -1,70 +1,129 @@
-// frontend/src/BookModal.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function BookModal({ book, onClose, onSave }) {
-  const [formData, setFormData] = useState({
-    title: '',
-    author: '',
-    genres: [],
-    spice_level: '',
-    release_date: '',
-    notes: ''
-  });
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [genresText, setGenresText] = useState('');
+  const [spice, setSpice] = useState(0);
+  const [releaseDate, setReleaseDate] = useState('');
+  const [notes, setNotes] = useState('');
+  const dialogRef = useRef(null);
 
   useEffect(() => {
     if (book) {
-      // Normalize genre data into an array
-      let genresArray = [];
-      if (Array.isArray(book.genres)) {
-        genresArray = book.genres;
-      } else if (book.genre) {
-        genresArray = [book.genre];
-      } else if (book['genre/theme']) {
-        genresArray = [book['genre/theme']];
-      } else if (book['genre/category']) {
-        genresArray = [book['genre/category']];
-      }
+      setTitle(book.title || '');
+      setAuthor(book.author || '');
+      const g = Array.isArray(book.genres)
+        ? book.genres.join(', ')
+        : (book.genre || book['genre/theme'] || book['genre/category'] || '');
+      setGenresText(g);
 
-      setFormData({
-        title: book.title || '',
-        author: book.author || '',
-        genres: genresArray,
-        spice_level: book.spice_level || '',
-        release_date: book.release_date || '',
-        notes: book.notes || ''
-      });
+      const raw =
+        book.spice ?? book.spice_level ?? book.spiceLevel ?? book.spice_rating ?? 0;
+      const toNum = v => {
+        if (typeof v === 'number' && Number.isFinite(v)) return v;
+        const s = String(v ?? '').toLowerCase();
+        if (/\bhigh\b/.test(s)) return 5;
+        if (/\bmedium\b/.test(s)) return 3;
+        if (/\blow\b/.test(s)) return 1;
+        const n = parseInt(s, 10);
+        return Number.isFinite(n) ? n : 0;
+      };
+      setSpice(Math.max(0, Math.min(5, toNum(raw))));
+      setReleaseDate(book.release_date || book.releaseDate || '');
+      setNotes(book.notes || '');
+    } else {
+      setTitle(''); setAuthor(''); setGenresText(''); setSpice(0); setReleaseDate(''); setNotes('');
     }
   }, [book]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const handleBackdrop = e => { if (e.target === dialogRef.current) onClose(); };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    const genres = genresText.split(',').map(s => s.trim()).filter(Boolean);
+    onSave({ title, author, genres, spice: Number(spice), release_date: releaseDate, notes });
   };
 
-  const handleGenreChange = (e) => {
-    const { value } = e.target;
-    setFormData((prev) => ({ ...prev, genres: value.split(',').map(g => g.trim()) }));
-  };
-
-  const handleSave = () => {
-    onSave(formData);
-  };
+  const labelCls = "text-sm text-white/80";
+  const inputCls = "w-full rounded-xl bg-black/20 ring-1 ring-white/10 px-3 py-3 focus:ring-2 focus:ring-[var(--gold-ritual)]";
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 animate-velvetFade">
-      <div className="bg-raven-ink p-8 rounded-[14px] shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-gold-ritual mb-4">{book ? 'Edit Book' : 'Add Book'}</h2>
-        <div className="space-y-4">
-          <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Title" className="w-full p-2 rounded-[14px] bg-paper border border-gold-ritual/20" />
-          <input type="text" name="author" value={formData.author} onChange={handleChange} placeholder="Author" className="w-full p-2 rounded-[14px] bg-paper border border-gold-ritual/20" />
-          <input type="text" name="genres" value={formData.genres.join(', ')} onChange={handleGenreChange} placeholder="Genres (comma-separated)" className="w-full p-2 rounded-[14px] bg-paper border border-gold-ritual/20" />
-          <input type="text" name="spice_level" value={formData.spice_level} onChange={handleChange} placeholder="Spice Level" className="w-full p-2 rounded-[14px] bg-paper border border-gold-ritual/20" />
-          <input type="text" name="release_date" value={formData.release_date} onChange={handleChange} placeholder="Release Date" className="w-full p-2 rounded-[14px] bg-paper border border-gold-ritual/20" />
-          <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Notes" className="w-full p-2 rounded-[14px] bg-paper border border-gold-ritual/20"></textarea>
+    <div
+      ref={dialogRef}
+      onMouseDown={handleBackdrop}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60"
+    >
+      <div
+        onMouseDown={e => e.stopPropagation()}
+        className="w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-2xl bg-[var(--raven-ink)] text-white ring-1 ring-white/10 shadow-2xl rounded-none sm:rounded-2xl flex flex-col"
+      >
+        {/* Header */}
+        <div className="sticky top-0 z-10 px-4 sm:px-6 py-4 border-b border-white/10 bg-[var(--raven-ink)] pt-[max(1rem,env(safe-area-inset-top))]">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl sm:text-2xl font-semibold">{book ? 'Edit Book' : 'Add Book'}</h2>
+            <button onClick={onClose} className="btn btn-phantom px-3 py-2">Close</button>
+          </div>
         </div>
-        <div className="mt-6 flex justify-end gap-4">
-          <button onClick={onClose} className="btn btn-phantom">Cancel</button>
-          <button onClick={handleSave} className="btn bg-gold-ritual text-raven-ink hover:bg-gold-ritual/80">Save</button>
+
+        {/* Body */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 grid gap-4">
+          <label className="grid gap-2">
+            <span className={labelCls}>Title</span>
+            <input className={inputCls} value={title} onChange={e => setTitle(e.target.value)} required />
+          </label>
+
+          <label className="grid gap-2">
+            <span className={labelCls}>Author</span>
+            <input className={inputCls} value={author} onChange={e => setAuthor(e.target.value)} />
+          </label>
+
+          <label className="grid gap-2">
+            <span className={labelCls}>Genres (comma separated)</span>
+            <input className={inputCls} value={genresText} onChange={e => setGenresText(e.target.value)} placeholder="Romantasy, Dark Romance" />
+          </label>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label className="grid gap-2">
+              <span className={labelCls}>Spice</span>
+              <select
+                className="rounded-xl bg-black/20 ring-1 ring-white/10 px-3 py-3 focus:ring-2 focus:ring-[var(--gold-ritual)]"
+                value={spice}
+                onChange={e => setSpice(Number(e.target.value))}
+              >
+                <option value={0}>0</option>
+                <option value={1}>1 🌶️</option>
+                <option value={2}>2 🌶️</option>
+                <option value={3}>3 🌶️</option>
+                <option value={4}>4 🌶️</option>
+                <option value={5}>5 🌶️</option>
+              </select>
+            </label>
+
+            <label className="grid gap-2">
+              <span className={labelCls}>Release date</span>
+              <input className={inputCls} value={releaseDate} onChange={e => setReleaseDate(e.target.value)} placeholder="YYYY-MM-DD" />
+            </label>
+          </div>
+
+          <label className="grid gap-2">
+            <span className={labelCls}>Notes</span>
+            <textarea className={`${inputCls} min-h-32 resize-y`} value={notes} onChange={e => setNotes(e.target.value)} />
+          </label>
+        </form>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 z-10 px-4 sm:px-6 py-3 border-t border-white/10 bg-[var(--raven-ink)] pb-[max(0.75rem,env(safe-area-inset-bottom))] flex justify-end gap-2">
+          <button type="button" className="btn btn-phantom px-4 py-3" onClick={onClose}>Cancel</button>
+          <button type="submit" formAction="submit" onClick={e => e.currentTarget.closest('form')?.requestSubmit()} className="btn px-5 py-3 bg-[var(--gold-ritual)] text-[var(--raven-ink)] hover:opacity-90 rounded-xl">
+            Save
+          </button>
         </div>
       </div>
     </div>

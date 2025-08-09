@@ -40,7 +40,16 @@ body {
   @apply bg-[var(--paper)] text-white font-serif antialiased;
   font-family: 'Cormorant Garamond', serif;
   background-color: #1a1a1a;
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.02) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.02) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.02) 75%,
+    transparent 75%,
+    transparent
+  );
   background-size: 30px 30px;
 }
 
@@ -54,93 +63,76 @@ p, span, li, div {
   @apply text-white;
 }
 
-.text-muted {
-  @apply text-[var(--muted)];
-}
+.text-muted { @apply text-[var(--muted)]; }
 
 /* Buttons */
 .btn {
   @apply inline-flex items-center justify-center rounded-[14px] px-4 py-2 text-sm font-medium transition-all ease-velvet;
 }
-.btn-raven {
-  @apply bg-[var(--raven-ink)] text-white hover:bg-black/80 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)];
-}
-.btn-blood {
-  @apply bg-[var(--rose-blood)] text-white hover:brightness-110 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)];
-}
-.btn-phantom {
-  @apply bg-transparent text-white border border-white/20 hover:border-white/40;
-}
+.btn-raven   { @apply bg-[var(--raven-ink)] text-white hover:bg-black/80 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)]; }
+.btn-blood   { @apply bg-[var(--rose-blood)] text-white hover:brightness-110 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)]; }
+.btn-phantom { @apply bg-transparent text-white border border-white/20 hover:border-white/40; }
 
 /* Cards and badges */
 .card {
   @apply rounded-[14px] bg-[linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03))] backdrop-blur border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)] p-4;
 }
-
-.card h3 {
-  @apply text-white font-semibold text-lg;
-}
-
-.card p {
-  @apply text-white/90 text-sm;
-}
+.card h3 { @apply text-white font-semibold text-lg; }
+.card p  { @apply text-white/90 text-sm; }
 
 .badge {
   @apply inline-flex items-center gap-1 rounded-[999px] px-3 py-1 text-xs font-medium border border-white/10 text-white;
 }
-.badge-rose {
-  background: color-mix(in oklab, var(--rose-blood), transparent 50%);
-}
-.badge-jade {
-  background: color-mix(in oklab, var(--jade-venom), transparent 50%);
-}
-.badge-gold {
-  background: color-mix(in oklab, var(--gold-ritual), transparent 50%);
-  color: #2c2414;
-}
-.badge-violet {
-  background: color-mix(in oklab, var(--violet-phantom), transparent 50%);
-}
-.badge-steel {
-  background: color-mix(in oklab, var(--steel-mafia), transparent 50%);
-}
-.badge-neon {
-  background: color-mix(in oklab, var(--noir-neon), transparent 50%);
-  color: #06272c;
-}
+.badge-rose  { background: color-mix(in oklab, var(--rose-blood), transparent 50%); }
+.badge-jade  { background: color-mix(in oklab, var(--jade-venom), transparent 50%); }
+.badge-gold  { background: color-mix(in oklab, var(--gold-ritual), transparent 50%); color: #2c2414; }
+.badge-violet{ background: color-mix(in oklab, var(--violet-phantom), transparent 50%); }
+.badge-steel { background: color-mix(in oklab, var(--steel-mafia), transparent 50%); }
+.badge-neon  { background: color-mix(in oklab, var(--noir-neon), transparent 50%); color: #06272c; }
 
 /* Background utilities */
 .bg-basilisk {
   --s: 26px;
   --c1: color-mix(in oklab, var(--jade-venom), black 40%);
   --c2: color-mix(in oklab, var(--jade-venom), white 5%);
-  background: radial-gradient(circle at 50% 0, var(--c1) 20%, transparent 21%) calc(var(--s) / 2)
-      calc(var(--s) / 2),
-    radial-gradient(circle at 0 50%, var(--c2) 20%, transparent 21%) 0 0 / var(--s) var(--s);
+  background: radial-gradient(circle at 50% 0, var(--c1) 20%, transparent 21%) calc(var(--s) / 2) calc(var(--s) / 2),
+              radial-gradient(circle at 0 50%, var(--c2) 20%, transparent 21%) 0 0 / var(--s) var(--s);
   background-color: #061912;
 }
 .bg-neon-rain {
-  background-image: radial-gradient(
-      1px 1px at 20px 30px,
-      rgba(255, 255, 255, 0.08) 1px,
-      transparent 1px
-    ),
-    radial-gradient(
-      1px 1px at 40px 60px,
-      rgba(255, 255, 255, 0.06) 1px,
-      transparent 1px
-    );
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.08) 1px, transparent 1px),
+    radial-gradient(1px 1px at 40px 60px, rgba(255,255,255,0.06) 1px, transparent 1px);
 }
 
 /* Motion and focus */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition-duration: 0.01ms !important; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition-duration: 0.01ms !important;
-  }
+/* ------- Mobile additions ------- */
+
+/* Responsive type */
+h1 { font-size: clamp(1.75rem, 5vw, 3rem); line-height: 1.1; }
+h2 { font-size: clamp(1.25rem, 3.5vw, 2rem); line-height: 1.2; }
+h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); line-height: 1.25; }
+
+/* Touch comfort + compact cards */
+@media (max-width: 640px) {
+  .btn   { padding: 0.875rem 1rem; font-size: 1rem; min-height: 44px; }
+  .input { padding: 0.875rem 0.875rem; font-size: 1rem; min-height: 44px; }
+  .badge { padding: 0.5rem 0.75rem; font-size: 0.8125rem; }
+  .card  { padding: 0.75rem; }
 }
+
+/* Scrollable tab bars on mobile */
+.tabbar-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+.tabbar-scroll::-webkit-scrollbar { height: 6px; }
+.tabbar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 999px; }
+
+/* Safe areas for notches / home indicator */
+.safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+.safe-right  { padding-right:  max(1rem, env(safe-area-inset-right)); }
+.safe-left   { padding-left:   max(1rem, env(safe-area-inset-left)); }
+.safe-top    { padding-top:    max(1rem, env(safe-area-inset-top)); }

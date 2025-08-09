@@ -82,5 +82,23 @@
     "isTbr": false,
     "coverUrl": "https://covers.openlibrary.org/b/id/10526129-L.jpg",
     "cover_image_url": "https://covers.openlibrary.org/b/id/10526129-L.jpg"
+  },
+  {
+    "id": "02984db2-0c67-4813-8bb6-45d04e66fe24",
+    "title": "Good Girl Effect",
+    "author": "Sara Cate",
+    "genres": [
+      "Romance",
+      "Smut",
+      "Contemporary Romance",
+      "Dark Romance",
+      "BDSM",
+      "Erotica"
+    ],
+    "spice": 0,
+    "release_date": "2025-01-23",
+    "notes": "",
+    "coverUrl": "https://books.google.com/books/content?id=D_RU0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "cover_image_url": "https://books.google.com/books/content?id=D_RU0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
   }
 ]

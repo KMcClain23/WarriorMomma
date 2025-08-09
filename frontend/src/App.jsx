@@ -1,6 +1,8 @@
-// frontend/src/App.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import BookModal from './BookModal';
+import FilterPanel from './components/FilterPanel.jsx';
+
+const API_BASE = 'http://localhost:5000';
 
 const tabs = [
   { key: 'library', label: 'Collection', endpoint: '/api/library' },
@@ -8,29 +10,36 @@ const tabs = [
   { key: 'upcoming', label: 'Upcoming', endpoint: '/api/upcoming' }
 ];
 
-function Badge({ kind = 'jade', children }) {
-  const cls =
-    kind === 'rose' ? 'badge badge-rose' :
-    kind === 'gold' ? 'badge badge-gold' :
-    kind === 'violet' ? 'badge badge-violet' :
-    kind === 'steel' ? 'badge badge-steel' :
-    kind === 'neon' ? 'badge badge-neon' :
-    'badge badge-jade';
-  return <span className={cls}>{children}</span>;
+// normalize spice 0..5 from any known field name
+function getSpice(book) {
+  const raw =
+    book?.spice ??
+    book?.spice_level ??
+    book?.spiceLevel ??
+    book?.spiceRating ??
+    book?.spice_rating ??
+    book?.['spice level'] ??
+    book?.['Spice Level'] ??
+    book?.['Spice'] ??
+    book?.['spice'];
+  if (typeof raw === 'number' && Number.isFinite(raw)) return Math.max(0, Math.min(5, Math.round(raw)));
+  const v = String(raw ?? '').trim().toLowerCase();
+  if (!v) return 0;
+  if (/\bhigh\b/.test(v)) return 5;
+  if (/\bmedium\b/.test(v)) return 3;
+  if (/\blow\b/.test(v)) return 1;
+  const n = parseInt(v, 10);
+  return Number.isFinite(n) ? Math.max(0, Math.min(5, n)) : 0;
 }
-
-function spiceBadge(spice) {
-  if (!spice) return null;
-  const s = String(spice).trim();
-  return <Badge kind="rose">Spice {s}</Badge>;
-}
-
-// Resolve a usable cover URL from either key
+function spiceEmojis(n) { const x = Math.max(0, Math.min(5, Number(n)||0)); return x===0 ? '0' : '🌶️'.repeat(x); }
 function getCover(book) {
   const url = book?.coverUrl || book?.cover_image_url || '';
-  if (!url) return '';
-  // normalize to https and strip google curl param
-  return url.replace(/^http:/, 'https:').replace(/&edge=curl/g, '');
+  return url ? url.replace(/^http:/, 'https:').replace(/&edge=curl/g, '') : '';
+}
+function getGenres(book) {
+  if (Array.isArray(book?.genres)) return book.genres.filter(Boolean);
+  const raw = book?.genre || book?.['genre/theme'] || book?.['genre/category'] || '';
+  return String(raw).split(',').map(s=>s.trim()).filter(Boolean);
 }
 
 export default function App() {
@@ -41,168 +50,186 @@ export default function App() {
   const [editingBook, setEditingBook] = useState(null);
   const [moveMenuOpenFor, setMoveMenuOpenFor] = useState(null);
 
+  // filters
+  const [selectedGenres, setSelectedGenres] = useState(new Set());
+  const [spiceFilter, setSpiceFilter] = useState('any');     // "any" or "0".."5"
+  const [statusFilter, setStatusFilter] = useState('any');   // "any" | "read" | "tbr"
+
+  const sectionKey = active.key;
+  const endpoint = `${API_BASE}${active.endpoint}`;
+
+  // fetch current section data
   useEffect(() => {
-    if (!cache[active.key]) {
+    if (!cache[sectionKey]) {
       setLoading(true);
-      fetch(`http://localhost:5000${active.endpoint}`)
-        .then((r) => r.json())
-        .then((data) => {
-          setCache((prev) => ({ ...prev, [active.key]: data }));
-        })
+      fetch(endpoint)
+        .then(r => r.json())
+        .then(data => setCache(prev => ({ ...prev, [sectionKey]: data })))
         .finally(() => setLoading(false));
     }
-  }, [active, cache]);
+  }, [sectionKey, endpoint, cache]);
 
-  function handleTabClick(tab) {
-    setActive(tab);
-  }
+  // Derive the set of available genres from current data and prune selection if needed
+  const availableGenres = useMemo(() => {
+    const s = new Set();
+    (cache[sectionKey] || []).forEach(b => getGenres(b).forEach(g => s.add(g)));
+    return s;
+  }, [sectionKey, cache]);
 
-  const handleOpenModal = (book = null) => {
-    setEditingBook(book);
-    setIsModalOpen(true);
-  };
+  useEffect(() => {
+    if (!selectedGenres.size) return;
+    const next = new Set([...selectedGenres].filter(g => availableGenres.has(g)));
+    if (next.size !== selectedGenres.size) setSelectedGenres(next);
+  }, [availableGenres, selectedGenres]);
 
-  const handleCloseModal = () => {
-    setEditingBook(null);
-    setIsModalOpen(false);
-  };
+  const handleOpenModal = (book=null) => { setEditingBook(book); setIsModalOpen(true); };
+  const handleCloseModal = () => { setEditingBook(null); setIsModalOpen(false); };
 
   const handleSaveBook = async (bookData) => {
     const method = editingBook ? 'PUT' : 'POST';
-    const url = editingBook
-      ? `http://localhost:5000${active.endpoint}/${editingBook.id}`
-      : `http://localhost:5000${active.endpoint}`;
-
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bookData)
-    });
+    const url = editingBook ? `${endpoint}/${editingBook.id}` : endpoint;
+    const response = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(bookData) });
     const savedBook = await response.json();
-
-    if (editingBook) {
-      setCache(prev => ({
-        ...prev,
-        [active.key]: prev[active.key].map(b => b.id === editingBook.id ? savedBook : b)
-      }));
-    } else {
-      setCache(prev => ({
-        ...prev,
-        [active.key]: [...prev[active.key], savedBook]
-      }));
-    }
+    setCache(prev => ({
+      ...prev,
+      [sectionKey]: editingBook
+        ? prev[sectionKey].map(b => b.id === editingBook.id ? savedBook : b)
+        : [...prev[sectionKey], savedBook]
+    }));
     handleCloseModal();
   };
 
   const handleDeleteBook = async (bookId) => {
-    await fetch(`http://localhost:5000${active.endpoint}/${bookId}`, {
-      method: 'DELETE'
-    });
-    setCache(prev => ({
-      ...prev,
-      [active.key]: prev[active.key].filter(b => b.id !== bookId)
-    }));
+    await fetch(`${endpoint}/${bookId}`, { method: 'DELETE' });
+    setCache(prev => ({ ...prev, [sectionKey]: prev[sectionKey].filter(b => b.id !== bookId) }));
   };
 
   const handleMoveBook = async (book, destinationSection) => {
-    const sourceSection = active.key;
+    const sourceSection = sectionKey;
     const bookToMove = cache[sourceSection].find(b => b.id === book.id);
 
-    // Optimistic UI update
+    // optimistic UI
     setCache(prev => ({
       ...prev,
       [sourceSection]: prev[sourceSection].filter(b => b.id !== book.id),
       [destinationSection]: [...(prev[destinationSection] || []), bookToMove]
     }));
 
-    await fetch('http://localhost:5000/api/move-book', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    await fetch(`${API_BASE}/api/move-book`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ bookId: book.id, sourceSection, destinationSection })
     });
   };
 
   const handleUpdateBookStatus = async (book, field, value) => {
     const updatedBook = { ...book, [field]: value };
-
-    // Optimistic UI update
-    setCache(prev => ({
-      ...prev,
-      [active.key]: prev[active.key].map(b => b.id === book.id ? updatedBook : b)
-    }));
-
-    await fetch(`http://localhost:5000${active.endpoint}/${book.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ [field]: value })
+    setCache(prev => ({ ...prev, [sectionKey]: prev[sectionKey].map(b => b.id === book.id ? updatedBook : b) }));
+    await fetch(`${endpoint}/${book.id}`, {
+      method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ [field]: value })
     });
   };
 
-  const data = cache[active.key] || [];
-  const fallback = "/images/cover-fallback.svg"; // put a simple svg/png in frontend/public/images
+  const data = cache[sectionKey] || [];
+  const fallback = "/images/cover-fallback.svg";
+
+  // filtered list (genres + spice + read/tbr)
+  const filteredData = useMemo(() => {
+    return data.filter(b => {
+      const genres = getGenres(b);
+      const spice = getSpice(b);
+
+      const genresOk =
+        selectedGenres.size === 0 ||
+        [...selectedGenres].every(g => genres.includes(g));
+
+      const spiceOk = spiceFilter === 'any' ? true : spice === Number(spiceFilter);
+
+      const statusOk =
+        statusFilter === 'any'
+          ? true
+          : statusFilter === 'read'
+            ? !!b.isRead
+            : !!b.isTbr; // 'tbr'
+
+      return genresOk && spiceOk && statusOk;
+    });
+  }, [data, selectedGenres, spiceFilter, statusFilter]);
 
   return (
-    <div className="min-h-dvh p-6 max-w-6xl mx-auto bg-paper bg-opacity-90">
+    <div className="min-h-dvh p-4 sm:p-6 max-w-6xl mx-auto bg-paper">
       <header className="relative">
-        <div className="absolute top-0 right-0 -z-10">
-          <img src="https://i.imgur.com/c1iP4sD.png" alt="Rose" className="w-64 h-64 object-contain opacity-20" />
-        </div>
-        <h1 className="text-5xl font-bold">Moody tales. Bold hearts.</h1>
-        <p className="mt-3 text-white/80 text-lg">Dark romance, romantasy, and neon noir.</p>
+        <h1 className="font-bold">Moody tales. Bold hearts.</h1>
+        <p className="mt-2 text-white/80 text-base sm:text-lg">Dark romance, romantasy, and neon noir.</p>
 
-        {/* Tabs */}
-        <div className="mt-8 border-b border-white/10 flex gap-2">
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              className={`px-4 py-2 text-lg rounded-t-[14px] hover:text-white transition-colors duration-300 ${
-                active.key === t.key ? 'text-white border-b-2 border-gold-ritual' : 'text-white/70'
-              }`}
-              onClick={() => handleTabClick(t)}
-            >
-              {t.label}
-            </button>
-          ))}
+        {/* Tabs: scrollable on mobile */}
+        <div className="mt-4 sm:mt-8 border-b border-white/10 -mx-4 sm:mx-0 px-4 tabbar-scroll">
+          <div className="flex gap-2 min-w-max">
+            {tabs.map(t => (
+              <button
+                key={t.key}
+                className={`px-4 py-2 text-base sm:text-lg rounded-t-[14px] hover:text-white transition-colors ${
+                  sectionKey === t.key ? 'text-white border-b-2 border-[var(--gold-ritual)]' : 'text-white/70'
+                }`}
+                onClick={() => setActive(t)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
-      {/* Grid */}
-      <section className="mt-6">
+      {/* Filters (data-driven; auto-updates) */}
+      <FilterPanel
+        data={data}
+        selectedGenres={selectedGenres}
+        setSelectedGenres={setSelectedGenres}
+        spiceFilter={spiceFilter}
+        setSpiceFilter={setSpiceFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        clearFilters={() => { setSelectedGenres(new Set()); setSpiceFilter('any'); setStatusFilter('any'); }}
+      />
+
+      {/* Grid: 1 col mobile, 2 md, 3 lg */}
+      <section className="mt-4 sm:mt-6">
         {loading ? (
           <div className="text-white/70">Loading…</div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.map((b, i) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredData.map((b, i) => {
               const cover = getCover(b);
+              const spice = getSpice(b);
               return (
                 <article
-                  key={i}
-                  className={`card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-glow relative ${moveMenuOpenFor === b.id ? 'z-20' : 'z-auto'}`}
+                  key={b.id ?? i}
+                  className={`card hover:shadow-glow transition relative ${moveMenuOpenFor === b.id ? 'z-20' : 'z-auto'}`}
                 >
-                  {/* Top-right actions */}
+                  {/* Actions */}
                   <div className="absolute top-2 right-2 flex gap-2 z-10">
                     <button
                       onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)}
-                      className={`btn text-xs px-2 py-1 ${b.isRead ? 'bg-gold-ritual text-raven-ink border-transparent' : 'btn-phantom'}`}
+                      className={`btn text-xs sm:text-xs px-3 py-2 ${b.isRead ? 'bg-[var(--gold-ritual)] text-[var(--raven-ink)] border-transparent' : 'btn-phantom'}`}
+                      title={b.isRead ? 'Mark as Unread' : 'Mark as Read'}
                     >
                       Read
                     </button>
                     <button
                       onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)}
-                      className={`btn text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white border-transparent' : 'btn-phantom'}`}
+                      className={`btn text-xs sm:text-xs px-3 py-2 ${b.isTbr ? 'bg-[var(--violet-phantom)] text-white border-transparent' : 'btn-phantom'}`}
+                      title={b.isTbr ? 'Remove from TBR' : 'Add to TBR'}
                     >
                       TBR
                     </button>
                   </div>
 
-                  {/* Cover or fallback title */}
+                  {/* Cover */}
                   {cover ? (
                     <img
                       src={cover}
                       alt={b.title}
                       className="w-full h-auto rounded-t-[14px] aspect-[2/3] object-cover"
                       onError={(e) => {
-                        // prevent infinite loop if fallback 404s
                         if (e.currentTarget.dataset.fallbackApplied) return;
                         e.currentTarget.dataset.fallbackApplied = '1';
                         e.currentTarget.src = fallback;
@@ -210,31 +237,21 @@ export default function App() {
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full aspect-[2/3] bg-raven-ink rounded-t-[14px] flex items-center justify-center p-4">
-                      <h3 className="text-gold-ritual text-center font-semibold">{b.title}</h3>
+                    <div className="w-full aspect-[2/3] bg-[var(--raven-ink)] rounded-t-[14px] flex items-center justify-center p-4">
+                      <h3 className="text-[var(--gold-ritual)] text-center font-semibold">{b.title}</h3>
                     </div>
                   )}
 
                   <div className="p-4">
-                    <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
-                    {b.author && <p className="text-white/80">{b.author}</p>}
+                    <h3 className="font-bold text-xl sm:text-2xl text-[var(--gold-ritual)]">{b.title}</h3>
+                    {b.author && <p className="text-white/80 text-sm sm:text-base">{b.author}</p>}
 
-                    {/* genres */}
-                    <div className="mt-3 flex gap-2 flex-wrap">
-                      {Array.isArray(b.genres)
-                        ? b.genres.map((g, j) => <Badge key={j}>{g}</Badge>)
-                        : b.genre
-                          ? <Badge>{b.genre}</Badge>
-                          : b['genre/theme']
-                            ? <Badge>{b['genre/theme']}</Badge>
-                            : b['genre/category']
-                              ? <Badge>{b['genre/category']}</Badge>
-                              : null}
-                      {/* spice */}
-                      {spiceBadge(b.spice_level)}
+                    {/* chilies */}
+                    <div className="mt-3 text-2xl leading-none" aria-label={`Spice ${spice} of 5`} title={`Spice ${spice}/5`}>
+                      {spiceEmojis(spice)}
                     </div>
 
-                    {/* dates / notes / reason */}
+                    {/* meta */}
                     <div className="mt-3 text-sm text-white/70 space-y-1">
                       {b.release_date && <div>Release: {b.release_date}</div>}
                       {b['reason/description'] && <div className="text-white/80">{b['reason/description']}</div>}
@@ -242,21 +259,23 @@ export default function App() {
                     </div>
 
                     {/* actions */}
-                    <div className="mt-4 flex gap-2 relative items-center">
-                      <button onClick={() => handleOpenModal(b)} className="btn bg-plum-velvet text-white hover:bg-plum-velvet/80">Edit</button>
+                    <div className="mt-4 flex gap-2 items-center">
+                      <button
+                        onClick={() => { setEditingBook(b); setIsModalOpen(true); }}
+                        className="btn bg-[var(--violet-phantom)] text-white hover:opacity-90"
+                      >
+                        Edit
+                      </button>
                       <button onClick={() => handleDeleteBook(b.id)} className="btn btn-phantom">Delete</button>
-                      <div className="relative">
+                      <div className="relative ml-auto">
                         <button onClick={() => setMoveMenuOpenFor(moveMenuOpenFor === b.id ? null : b.id)} className="btn btn-phantom">Move</button>
                         {moveMenuOpenFor === b.id && (
-                          <div className="absolute top-full right-0 mt-2 w-48 bg-raven-ink rounded-[14px] shadow-lg z-10">
-                            {tabs.filter(t => t.key !== active.key).map(t => (
+                          <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--raven-ink)] rounded-[14px] shadow-lg z-10 ring-1 ring-white/10">
+                            {tabs.filter(t => t.key !== sectionKey).map(t => (
                               <button
                                 key={t.key}
-                                onClick={() => {
-                                  handleMoveBook(b, t.key);
-                                  setMoveMenuOpenFor(null);
-                                }}
-                                className="w-full text-left px-4 py-2 text-sm text-white hover:bg-plum-velvet"
+                                onClick={() => { handleMoveBook(b, t.key); setMoveMenuOpenFor(null); }}
+                                className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10"
                               >
                                 Move to {t.label}
                               </button>
@@ -273,9 +292,11 @@ export default function App() {
         )}
       </section>
 
+      {/* FAB with safe-area padding */}
       <button
-        onClick={() => handleOpenModal()}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gold-ritual text-raven-ink rounded-full shadow-lg flex items-center justify-center text-4xl font-bold"
+        onClick={() => { setEditingBook(null); setIsModalOpen(true); }}
+        className="fixed bottom-4 right-4 safe-bottom safe-right w-14 h-14 sm:w-16 sm:h-16 bg-[var(--gold-ritual)] text-[var(--raven-ink)] rounded-full shadow-lg flex items-center justify-center text-3xl sm:text-4xl font-bold"
+        aria-label="Add book"
       >
         +
       </button>
@@ -283,7 +304,7 @@ export default function App() {
       {isModalOpen && (
         <BookModal
           book={editingBook}
-          onClose={handleCloseModal}
+          onClose={() => setIsModalOpen(false)}
           onSave={handleSaveBook}
         />
       )}
