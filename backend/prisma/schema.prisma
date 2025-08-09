@@ -1,0 +1,39 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Book {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title           String
+  author          String?
+  cover_image_url String?
+  description     String? // New field for the book's description
+  spice_level     String?
+  release_date    String?
+  notes           String?
+  owned           Boolean? @default(true)
+  
+  section String
+  isRead  Boolean @default(false)
+  isTbr   Boolean @default(false)
+  
+  // This creates the many-to-many relationship with the Genre model
+  genres Genre[]
+}
+
+// New model for storing a master list of genres
+model Genre {
+  id   String @id @default(cuid())
+  name String @unique // Each genre name must be unique
+
+  // This creates the other side of the many-to-many relationship
+  books Book[]
+}
