@@ -2,15 +2,15 @@
   "rewrites": [
     {
       "source": "/api/library",
-      "destination": "/frontend/data/library.json"
+      "destination": "/backend/data/library.json"
     },
     {
       "source": "/api/recommended",
-      "destination": "/frontend/data/recommended.json"
+      "destination": "/backend/data/recommended.json"
     },
     {
       "source": "/api/upcoming",
-      "destination": "/frontend/data/upcoming.json"
+      "destination": "/backend/data/upcoming.json"
     }
   ]
 }
