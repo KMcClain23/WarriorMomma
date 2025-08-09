@@ -5,6 +5,11 @@
       "DIRECT_URL": "@direct_url"
     }
   },
+  "functions": {
+    "backend/**/*": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "scripts": {
     "build": "pnpm install && pnpm exec prisma generate && pnpm --filter warriormomma build"
   }
