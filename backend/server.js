@@ -107,4 +107,8 @@ app.post('/api/move-book', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`WarriorMomma backend running on http://localhost:${PORT}`));
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`WarriorMomma backend running on http://localhost:${PORT}`));
+}
+
+module.exports = app;
