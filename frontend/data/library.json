@@ -1,0 +1,372 @@
+[
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "title": "God of Fury",
+    "author": "Rina Kent",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Dark Contemporary Romance",
+    "release_date": "2023-12-06",
+    "notes": "Standalone",
+    "spice_level": "4",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/14858421-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14858421-L.jpg",
+    "genres": [
+      "Dark Contemporary Romance"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+    "title": "Does It Hurt?",
+    "author": "H.D. Carlton",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Dark Romantic Suspense",
+    "release_date": "2022-07-22",
+    "notes": "Standalone",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/12860070-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/12860070-L.jpg",
+    "genres": [
+      "Dark Romantic Suspense"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+    "title": "A Court of Thorns and Roses",
+    "author": "Sarah J. Maas",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Romantasy",
+    "release_date": "2015-05-05",
+    "notes": "Feyre's journey",
+    "spice_level": "Medium",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/8738585-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/8738585-L.jpg",
+    "genres": [
+      "Romantasy"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+    "title": "Flock",
+    "author": "Kate Stewart",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "Dark Romance",
+    "release_date": "2024-05-21",
+    "notes": "Ravenhood #1",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/13246558-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13246558-L.jpg",
+    "genres": [
+      "Dark Romance"
+    ],
+    "spice": 3
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+    "title": "Exodus",
+    "author": "Kate Stewart",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "Dark Romance",
+    "release_date": "2024-08-20",
+    "notes": "Ravenhood #2",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/13528285-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13528285-L.jpg",
+    "genres": [
+      "Dark Romance"
+    ],
+    "spice": 3
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d484",
+    "title": "The Finish Line",
+    "author": "Kate Stewart",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "Dark Romance",
+    "release_date": "2024-10-22",
+    "notes": "Ravenhood #3",
+    "spice_level": "High",
+    "cover_image_url": "https://books.google.com/books/content?id=16fvEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "coverUrl": "https://books.google.com/books/content?id=16fvEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "genres": [
+      "Dark Romance"
+    ],
+    "spice": 3
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d485",
+    "title": "One Last Rainy Day",
+    "author": "Kate Stewart",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "Dark Romance",
+    "release_date": "2024-12-24",
+    "notes": "Ravenhood Legacy",
+    "spice_level": "High",
+    "cover_image_url": "https://books.google.com/books/content?id=buMTEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "coverUrl": "https://books.google.com/books/content?id=buMTEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "genres": [
+      "Dark Romance"
+    ],
+    "spice": 3
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d486",
+    "title": "Severed Heart",
+    "author": "Kate Stewart",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "Dark Romance",
+    "release_date": "2025-06-24",
+    "notes": "Ravenhood Legacy #2",
+    "spice_level": "High",
+    "cover_image_url": "https://books.google.com/books/content?id=5U4aEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "coverUrl": "https://books.google.com/books/content?id=5U4aEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "genres": [
+      "Dark Romance"
+    ],
+    "spice": 4
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d487",
+    "title": "Lights Out",
+    "author": "Navessa Allen",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "Dark Romance/Suspense",
+    "release_date": "2024-08-06",
+    "notes": "Into Darkness #1",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/14641117-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14641117-L.jpg",
+    "genres": [
+      "Dark Romance/Suspense"
+    ],
+    "spice": 4
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d488",
+    "title": "Caught Up",
+    "author": "Navessa Allen",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "Dark Romance",
+    "release_date": "2025-06-10",
+    "notes": "Into Darkness #2",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/15093928-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/15093928-L.jpg",
+    "genres": [
+      "Dark Romance"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d489",
+    "title": "Den of Vipers",
+    "author": "K.A. Knight",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Dark Reverse Harem",
+    "release_date": "2020-07-10",
+    "notes": "Standalone",
+    "spice_level": "Extra High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/14612078-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14612078-L.jpg",
+    "genres": [
+      "Dark Reverse Harem"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d490",
+    "title": "Kiss of the Basilisk",
+    "author": "Lindsay Straube",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Dark Fantasy/Romance",
+    "release_date": "2025-02-25",
+    "notes": "Standalone",
+    "spice_level": "High",
+    "cover_image_url": "https://books.google.com/books/content?id=gwYxEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "coverUrl": "https://books.google.com/books/content?id=gwYxEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "genres": [
+      "Dark Fantasy/Romance"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d491",
+    "title": "The Sacrifice",
+    "author": "Shantel Tessier",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "Dark Revenge Romance",
+    "release_date": "2023-04-07",
+    "notes": "Standalone",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/14631950-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/14631950-L.jpg",
+    "genres": [
+      "Dark Revenge Romance"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d492",
+    "title": "The Sinner",
+    "author": "Shantel Tessier",
+    "owned": "Yes",
+    "isRead": true,
+    "isTbr": false,
+    "genre": "New Adult Dark Taboo",
+    "release_date": "2022-11-30",
+    "notes": "Standalone",
+    "spice_level": "High",
+    "cover_image_url": "https://books.google.com/books/content?id=_uUa0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "coverUrl": "https://books.google.com/books/content?id=_uUa0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "genres": [
+      "New Adult Dark Taboo"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d493",
+    "title": "Phantom",
+    "author": "H.D. Carlton",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Dark Romantic Suspense",
+    "release_date": "2025-01-14",
+    "notes": "Standalone",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/15089504-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/15089504-L.jpg",
+    "genres": [
+      "Dark Romantic Suspense"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d494",
+    "title": "Gravity",
+    "author": "Sara Cate",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Erotic Romance",
+    "release_date": "2020-11-25",
+    "notes": "Wilde Boys #1",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/13334391-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13334391-L.jpg",
+    "genres": [
+      "Erotic Romance"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d495",
+    "title": "Free Fall",
+    "author": "Sara Cate",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "MMF Erotic Romance",
+    "release_date": "2021-03-25",
+    "notes": "Standalone",
+    "spice_level": "Extra High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/13330266-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/13330266-L.jpg",
+    "genres": [
+      "MMF Erotic Romance"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d496",
+    "title": "The Brit",
+    "author": "Jodi Ellen Malpas",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Mafia Romance",
+    "release_date": "2021-03-16",
+    "notes": "Standalone",
+    "spice_level": "High",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/10721305-L.jpg",
+    "coverUrl": "https://covers.openlibrary.org/b/id/10721305-L.jpg",
+    "genres": [
+      "Mafia Romance"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d497",
+    "title": "Watch Your Back",
+    "author": "Tate James",
+    "owned": "Yes",
+    "isRead": false,
+    "isTbr": true,
+    "genre": "Dark 'Why-Choose' Romance",
+    "release_date": "2025-07-15",
+    "notes": "Devil's Backbone #2",
+    "spice_level": "High",
+    "cover_image_url": "https://books.google.com/books/content?id=HnYG0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "coverUrl": "https://books.google.com/books/content?id=HnYG0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "genres": [
+      "Dark 'Why-Choose' Romance"
+    ],
+    "spice": 0
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcde0",
+    "title": "Credence",
+    "author": "Penelope Douglas",
+    "genre/theme": "Forbidden Taboo Romance",
+    "reason/description": "Tiernan becomes entangled with her step-uncle and his sons in a remote cabin, blurring lines between family and desire",
+    "spice_level": "Extra High",
+    "isRead": true,
+    "isTbr": false,
+    "coverUrl": "https://covers.openlibrary.org/b/id/11311896-L.jpg",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/11311896-L.jpg",
+    "genres": [],
+    "spice": 0
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcde5",
+    "title": "Mindf*ck Series",
+    "author": "S.T. Abby",
+    "genre/theme": "Dark Romantic Suspense",
+    "reason/description": "Serial killer heroine falls for the FBI profiler hunting her; intense cat-and-mouse game",
+    "spice_level": "Extra High",
+    "isRead": false,
+    "isTbr": true,
+    "coverUrl": "https://covers.openlibrary.org/b/id/12552946-L.jpg",
+    "cover_image_url": "https://covers.openlibrary.org/b/id/12552946-L.jpg",
+    "genres": [],
+    "spice": 0
+  }
+]
