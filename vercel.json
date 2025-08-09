@@ -1,0 +1,11 @@
+{
+  "build": {
+    "env": {
+      "DATABASE_URL": "@db_url",
+      "DIRECT_URL": "@direct_url"
+    }
+  },
+  "scripts": {
+    "build": "pnpm install && pnpm exec prisma generate && pnpm --filter warriormomma build"
+  }
+}
