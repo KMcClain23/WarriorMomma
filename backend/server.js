@@ -12,7 +12,7 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'https://warrior-momma-web.vercel.app' // Add your frontend project's URL here
+  'https://warrior-momma-five.vercel.app' // Add your frontend project's URL here
 ];
 
 app.use(cors({
