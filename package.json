@@ -3,8 +3,10 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --parallel --stream -r dev",
-    "build": "prisma generate && pnpm --filter warriormomma build",
     "start": "pnpm --parallel --stream -r start"
+  },
+  "prisma": {
+    "schema": "backend/prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "6.13.0",
