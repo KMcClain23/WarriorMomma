@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --parallel --stream -r dev",
-    "build": "pnpm --filter warriormomma build",
+    "build": "prisma generate && pnpm --filter warriormomma build",
     "start": "pnpm --parallel --stream -r start"
   },
   "dependencies": {
