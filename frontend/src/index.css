@@ -1,12 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* =========================
-   THEME TOKENS
-   ========================= */
+/* Theme tokens (dark by default) */
 :root {
   --paper: #1a1a1a;
   --muted: #a3a3ad;
@@ -24,7 +21,6 @@
   --accent-2: color-mix(in oklab, var(--accent), white 30%);
   --success: #22c55e;
   --warning: #eab308;
-
   color-scheme: dark;
 }
 
@@ -35,178 +31,116 @@
   color-scheme: light;
 }
 
-/* =========================
-   BASE
-   ========================= */
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 
 body {
   @apply bg-[var(--paper)] text-white font-serif antialiased;
   font-family: 'Cormorant Garamond', serif;
   background-color: #1a1a1a;
-  background-image:
-    linear-gradient(45deg, rgba(255,255,255,.02) 25%, transparent 25%, transparent 50%,
-      rgba(255,255,255,.02) 50%, rgba(255,255,255,.02) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.02) 75%, transparent 75%, transparent);
   background-size: 30px 30px;
 }
 
+/* Global text readability */
 h1, h2, h3, h4, h5, h6 {
   @apply text-white font-bold;
   font-family: 'Cormorant Garamond', serif;
 }
 
-p, span, li, div { @apply text-white; }
-.text-muted { @apply text-[var(--muted)]; }
+p, span, li, div {
+  @apply text-white;
+}
 
-/* =========================
-   ACCESSIBILITY FOCUS
-   ========================= */
-/* Focus ring stays inside the element so it won't leak outside card borders */
+.text-muted {
+  @apply text-[var(--muted)];
+}
+
+/* Buttons */
+.btn {
+  @apply inline-flex items-center justify-center rounded-[14px] px-4 py-2 text-sm font-medium transition-all ease-velvet;
+}
+.btn-raven {
+  @apply bg-[var(--raven-ink)] text-white hover:bg-black/80 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)];
+}
+.btn-blood {
+  @apply bg-[var(--rose-blood)] text-white hover:brightness-110 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)];
+}
+.btn-phantom {
+  @apply bg-transparent text-white border border-white/20 hover:border-white/40;
+}
+
+/* Cards and badges */
+.card {
+  @apply rounded-[14px] bg-[linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03))] backdrop-blur border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,.45)] p-4;
+}
+
+.card h3 {
+  @apply text-white font-semibold text-lg;
+}
+
+.card p {
+  @apply text-white/90 text-sm;
+}
+
+.badge {
+  @apply inline-flex items-center gap-1 rounded-[999px] px-3 py-1 text-xs font-medium border border-white/10 text-white;
+}
+.badge-rose {
+  background: color-mix(in oklab, var(--rose-blood), transparent 50%);
+}
+.badge-jade {
+  background: color-mix(in oklab, var(--jade-venom), transparent 50%);
+}
+.badge-gold {
+  background: color-mix(in oklab, var(--gold-ritual), transparent 50%);
+  color: #2c2414;
+}
+.badge-violet {
+  background: color-mix(in oklab, var(--violet-phantom), transparent 50%);
+}
+.badge-steel {
+  background: color-mix(in oklab, var(--steel-mafia), transparent 50%);
+}
+.badge-neon {
+  background: color-mix(in oklab, var(--noir-neon), transparent 50%);
+  color: #06272c;
+}
+
+/* Background utilities */
+.bg-basilisk {
+  --s: 26px;
+  --c1: color-mix(in oklab, var(--jade-venom), black 40%);
+  --c2: color-mix(in oklab, var(--jade-venom), white 5%);
+  background: radial-gradient(circle at 50% 0, var(--c1) 20%, transparent 21%) calc(var(--s) / 2)
+      calc(var(--s) / 2),
+    radial-gradient(circle at 0 50%, var(--c2) 20%, transparent 21%) 0 0 / var(--s) var(--s);
+  background-color: #061912;
+}
+.bg-neon-rain {
+  background-image: radial-gradient(
+      1px 1px at 20px 30px,
+      rgba(255, 255, 255, 0.08) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      1px 1px at 40px 60px,
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px
+    );
+}
+
+/* Motion and focus */
 :focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--accent) inset;
-  border-radius: inherit;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition-duration: 0.01ms !important; }
-}
-
-/* =========================
-   COMPONENTS
-   ========================= */
-@layer components {
-  /* Buttons */
-  .btn {
-    @apply inline-flex items-center justify-center rounded-[14px] px-4 py-2 text-sm font-medium
-           transition-all duration-200 ease-out ring-1 ring-white/10 hover:ring-white/20;
-    background: color-mix(in oklab, var(--raven-ink) 80%, black 20%);
-  }
-  .btn-ghost {
-    @apply bg-transparent text-white ring-1 ring-white/15 hover:ring-white/30;
-  }
-  .btn-primary {
-    background: linear-gradient(180deg, var(--accent-2), var(--accent));
-    color: #15120a;
-  }
-  .btn-danger {
-    background: color-mix(in oklab, var(--rose-blood) 85%, black 15%);
-    @apply text-white;
-  }
-
-  /* Chips / Badges */
-  .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-medium
-           ring-1 ring-white/10;
-    background: color-mix(in oklab, var(--steel-mafia) 60%, transparent 40%);
-    color: #e6e6f0;
-  }
-  .badge-rose {
-    background: color-mix(in oklab, var(--rose-blood) 75%, transparent 25%);
-    @apply text-white;
-  }
-  .badge-jade {
-    background: color-mix(in oklab, var(--jade-venom) 28%, var(--steel-mafia) 72%);
-    color: #d1fae5;
-  }
-  .badge-gold {
-    background: color-mix(in oklab, var(--gold-ritual) 75%, black 25%);
-    color: #100d05;
-  }
-  .badge-violet {
-    background: color-mix(in oklab, var(--violet-phantom) 60%, var(--steel-mafia) 40%);
-    color: #f3e8ff;
-  }
-
-  /* Card shell */
-  .card {
-    @apply rounded-3xl p-4 border border-white/10 backdrop-blur;
-    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    box-shadow: 0 10px 30px -10px rgba(0,0,0,.45);
-  }
-
-  /* Book card layout */
-  .book-card {
-    @apply card flex flex-col relative overflow-hidden;
-    background: linear-gradient(180deg, var(--plum-velvet), #2a1830 55%, #1c1320);
-  }
-
-  /* Top-right status pills */
-  .status-stack {
-    @apply absolute right-3 top-3 flex flex-col gap-2;
-  }
-  .status-pill {
-    @apply rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-white/10;
-    background: color-mix(in oklab, var(--accent-2) 70%, white 10%);
-    color: #1b1712;
-  }
-  .status-pill.read {
-    background: color-mix(in oklab, var(--gold-ritual) 85%, black 15%);
-    color: #141109;
-  }
-  .status-pill.tbr {
-    background: color-mix(in oklab, var(--violet-phantom) 75%, black 25%);
-    color: #0d0918;
-  }
-
-  /* Cover area */
-  .book-cover {
-    @apply rounded-2xl grid place-items-center overflow-hidden;
-    background: radial-gradient(80% 120% at 50% 0%,
-      rgba(124,92,201,.15), rgba(0,0,0,.85));
-    aspect-ratio: 3/4;
-    border: 1px solid rgba(255,255,255,.06);
-  }
-  .book-cover h3 {
-    color: var(--gold-ritual);
-    text-shadow: 0 1px 8px rgba(199,165,89,.18);
-    @apply text-2xl md:text-3xl font-semibold text-center px-4;
-  }
-
-  /* Body section */
-  .book-body { @apply mt-4 flex flex-col gap-3; }
-  .book-title { @apply text-white text-lg font-semibold; }
-  .book-author { @apply text-sm text-[var(--muted)]; }
-  .book-meta { @apply text-sm text-[var(--muted)]; }
-
-  /* Action row */
-  .card-actions {
-    @apply mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-2;
-  }
-}
-
-/* =========================
-   UTILITIES
-   ========================= */
-@layer utilities {
-  .card-sheen {
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--violet-phantom), black 70%) inset,
-      0 10px 30px -10px rgba(0,0,0,.6);
-  }
-  .card-hover {
-    transition: box-shadow .25s, transform .25s;
-  }
-  .card-hover:hover {
-    box-shadow: 0 0 0 2px var(--violet-phantom),
-                0 18px 46px -12px rgba(124,92,201,.35);
-    transform: translateY(-2px);
-  }
-
-  /* Background motifs */
-  .bg-basilisk {
-    --s: 26px;
-    --c1: color-mix(in oklab, var(--jade-venom), black 40%);
-    --c2: color-mix(in oklab, var(--jade-venom), white 5%);
-    background:
-      radial-gradient(circle at 50% 0, var(--c1) 20%, transparent 21%) calc(var(--s)/2) calc(var(--s)/2),
-      radial-gradient(circle at 0 50%, var(--c2) 20%, transparent 21%) 0 0 / var(--s) var(--s);
-    background-color: #061912;
-  }
-
-  .bg-neon-rain {
-    background-image:
-      radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,.08) 1px, transparent 1px),
-      radial-gradient(1px 1px at 40px 60px, rgba(255,255,255,.06) 1px, transparent 1px);
+  * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
   }
 }
