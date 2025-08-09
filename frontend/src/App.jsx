@@ -170,7 +170,13 @@ export default function App() {
                   <button onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)} className={`btn text-xs px-2 py-1 ${b.isRead ? 'bg-gold-ritual text-raven-ink border-transparent' : 'btn-phantom'}`}>Read</button>
                   <button onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)} className={`btn text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white border-transparent' : 'btn-phantom'}`}>TBR</button>
                 </div>
-                <img src={b.cover_image_url} alt={b.title} className="w-full h-auto rounded-t-[14px]" />
+                {b.coverUrl ? (
+                  <img src={b.coverUrl} alt={b.title} className="w-full h-auto rounded-t-[14px] aspect-[2/3] object-cover" />
+                ) : (
+                  <div className="w-full aspect-[2/3] bg-raven-ink rounded-t-[14px] flex items-center justify-center p-4">
+                    <h3 className="text-gold-ritual text-center font-semibold">{b.title}</h3>
+                  </div>
+                )}
                 <div className="p-4">
                   <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
                   {b.author && <p className="text-white/80">{b.author}</p>}

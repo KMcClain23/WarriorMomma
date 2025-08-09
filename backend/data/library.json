@@ -10,7 +10,7 @@
     "release_date": "2023-12-06",
     "notes": "Standalone, suspense",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=God+of+Fury"
+    "coverUrl": "https://covers.openlibrary.org/b/id/14858421-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
@@ -23,7 +23,7 @@
     "release_date": "2022-07-22",
     "notes": "Standalone",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Does+It+Hurt?"
+    "coverUrl": "https://covers.openlibrary.org/b/id/12860070-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
@@ -36,7 +36,7 @@
     "release_date": "2015-05-05",
     "notes": "Feyre's journey",
     "spice_level": "Medium",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=A+Court+of+Thorns+and+Roses"
+    "coverUrl": "https://covers.openlibrary.org/b/id/8738585-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
@@ -49,7 +49,7 @@
     "release_date": "2024-05-21",
     "notes": "Ravenhood #1",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Flock"
+    "coverUrl": "https://covers.openlibrary.org/b/id/13246558-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
@@ -62,7 +62,7 @@
     "release_date": "2024-08-20",
     "notes": "Ravenhood #2",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Exodus"
+    "coverUrl": "https://covers.openlibrary.org/b/id/13528285-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d484",
@@ -74,8 +74,7 @@
     "genre": "Dark Romance",
     "release_date": "2024-10-22",
     "notes": "Ravenhood #3",
-    "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Finish+Line"
+    "spice_level": "High"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d485",
@@ -87,8 +86,7 @@
     "genre": "Dark Romance",
     "release_date": "2024-12-24",
     "notes": "Ravenhood Legacy",
-    "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=One+Last+Rainy+Day"
+    "spice_level": "High"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d486",
@@ -100,8 +98,7 @@
     "genre": "Dark Romance",
     "release_date": "2025-06-24",
     "notes": "Ravenhood Legacy #2",
-    "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Severed+Heart"
+    "spice_level": "High"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d487",
@@ -114,7 +111,7 @@
     "release_date": "2024-08-06",
     "notes": "Into Darkness #1",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Lights+Out"
+    "coverUrl": "https://covers.openlibrary.org/b/id/14641117-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d488",
@@ -127,7 +124,7 @@
     "release_date": "2025-06-10",
     "notes": "Into Darkness #2",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Caught+Up"
+    "coverUrl": "https://covers.openlibrary.org/b/id/15093928-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d489",
@@ -140,7 +137,7 @@
     "release_date": "2020-07-10",
     "notes": "Standalone",
     "spice_level": "Extra High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Den+of+Vipers"
+    "coverUrl": "https://covers.openlibrary.org/b/id/14612078-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d490",
@@ -152,8 +149,7 @@
     "genre": "Dark Fantasy/Romance",
     "release_date": "2025-02-25",
     "notes": "Standalone",
-    "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Kiss+of+the+Basilisk"
+    "spice_level": "High"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d491",
@@ -166,7 +162,7 @@
     "release_date": "2023-04-07",
     "notes": "Standalone",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Sacrifice"
+    "coverUrl": "https://covers.openlibrary.org/b/id/14631950-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d492",
@@ -178,8 +174,7 @@
     "genre": "New Adult Dark Taboo",
     "release_date": "2022-11-30",
     "notes": "Standalone",
-    "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Sinner"
+    "spice_level": "High"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d493",
@@ -192,7 +187,7 @@
     "release_date": "2025-01-14",
     "notes": "Standalone",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Phantom"
+    "coverUrl": "https://covers.openlibrary.org/b/id/15089504-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d494",
@@ -205,7 +200,7 @@
     "release_date": "2020-11-25",
     "notes": "Wilde Boys #1",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Gravity"
+    "coverUrl": "https://covers.openlibrary.org/b/id/13334391-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d495",
@@ -218,7 +213,7 @@
     "release_date": "2021-03-25",
     "notes": "Standalone",
     "spice_level": "Extra High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Free+Fall"
+    "coverUrl": "https://covers.openlibrary.org/b/id/13330266-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d496",
@@ -231,7 +226,7 @@
     "release_date": "2021-03-16",
     "notes": "Standalone",
     "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Brit"
+    "coverUrl": "https://covers.openlibrary.org/b/id/10721305-L.jpg"
   },
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d497",
@@ -243,7 +238,6 @@
     "genre": "Dark 'Why-Choose' Romance",
     "release_date": "2025-07-15",
     "notes": "Devil's Backbone #2",
-    "spice_level": "High",
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Watch+Your+Back"
+    "spice_level": "High"
   }
 ]

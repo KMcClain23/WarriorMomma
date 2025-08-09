@@ -8,8 +8,7 @@
     "spice_level": "High",
     "notes": "Standalone dark enemies-to-lovers story",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Sweet+Venom"
+    "isTbr": false
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde0",
@@ -20,8 +19,7 @@
     "spice_level": "High",
     "notes": "Conclusion to the dark duet",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Painted+Sinners"
+    "isTbr": false
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde1",
@@ -32,8 +30,7 @@
     "spice_level": "High",
     "notes": "Part of the Manhattan Ruthless series",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Mason%27s+Story"
+    "isTbr": false
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde2",
@@ -44,8 +41,7 @@
     "spice_level": "High",
     "notes": "New standalone by the author of Does It Hurt?",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=MDD"
+    "isTbr": false
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde3",
@@ -56,8 +52,7 @@
     "spice_level": "Extra High",
     "notes": "Male–male dark rivals romance set in Legacy of Gods world",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Hunt+the+Villain"
+    "isTbr": false
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde4",
@@ -68,8 +63,7 @@
     "spice_level": "Medium-High",
     "notes": "Dragonbond and Viking vibes",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Upon+Buried+Embers"
+    "isTbr": false
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde5",
@@ -80,8 +74,7 @@
     "spice_level": "High",
     "notes": "Part of the Kings of Sin series",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=King+of+Gluttony"
+    "isTbr": false
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde6",
@@ -92,8 +85,7 @@
     "spice_level": "Medium-High",
     "notes": "Emotional intensity expected",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Valeria+and+Enzo%27s+Story"
+    "isTbr": false
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde7",
@@ -105,7 +97,7 @@
     "notes": "Sorceress and villain in gothic setting",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Arkana"
+    "coverUrl": "https://covers.openlibrary.org/b/id/14633237-L.jpg"
   },
   {
     "id": "b1c2d3e4-f5g6-7890-1234-567890abcde8",
@@ -116,7 +108,6 @@
     "spice_level": "High",
     "notes": "Final Vipers installment",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Vipers+%233"
+    "isTbr": false
   }
 ]

@@ -8,7 +8,7 @@
     "spice_level": "High",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Butcher+%26+Blackbird"
+    "coverUrl": "https://covers.openlibrary.org/b/id/14434373-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde0",
@@ -19,7 +19,7 @@
     "spice_level": "Extra High",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Credence"
+    "coverUrl": "https://covers.openlibrary.org/b/id/11311896-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde1",
@@ -29,8 +29,7 @@
     "reason/description": "A sculptor stalks a woman he becomes obsessed with, mixing art and twisted passion",
     "spice_level": "High",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=There+Are+No+Saints"
+    "isTbr": false
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde2",
@@ -40,8 +39,7 @@
     "reason/description": "Heroine on Everland island caught between two morally ambiguous men; enemies-to-lovers vibe",
     "spice_level": "High",
     "isRead": false,
-    "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Devourer+of+Men"
+    "isTbr": false
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde3",
@@ -52,7 +50,7 @@
     "spice_level": "Medium-High",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=The+Serpent+and+the+Wings+of+Night"
+    "coverUrl": "https://covers.openlibrary.org/b/id/13451855-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde4",
@@ -63,7 +61,7 @@
     "spice_level": "Medium",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Twisted+Love"
+    "coverUrl": "https://covers.openlibrary.org/b/id/12940491-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde5",
@@ -74,7 +72,7 @@
     "spice_level": "Extra High",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Mindf*ck+Series"
+    "coverUrl": "https://covers.openlibrary.org/b/id/12552946-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde6",
@@ -85,7 +83,7 @@
     "spice_level": "Medium-High",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Ruthless+Creatures"
+    "coverUrl": "https://covers.openlibrary.org/b/id/10657632-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde7",
@@ -96,7 +94,7 @@
     "spice_level": "High",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=King+of+Battle+and+Blood"
+    "coverUrl": "https://covers.openlibrary.org/b/id/12194497-L.jpg"
   },
   {
     "id": "a1b2c3d4-e5f6-7890-1234-567890abcde8",
@@ -107,6 +105,6 @@
     "spice_level": "Mild-Moderate",
     "isRead": false,
     "isTbr": false,
-    "cover_image_url": "https://placehold.co/300x450/1a1a1a/c7a559/png?text=Kingdom+of+the+Wicked"
+    "coverUrl": "https://covers.openlibrary.org/b/id/10526129-L.jpg"
   }
 ]
