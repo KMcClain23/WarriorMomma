@@ -165,7 +165,7 @@ export default function App() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.map((b, i) => (
-              <article key={i} className={`card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-gold-ritual/20 hover:shadow-2xl hover:animate-roseBloom relative ${moveMenuOpenFor === b.id ? 'z-20' : 'z-auto'}`}>
+              <article key={i} className={`card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-glow relative ${moveMenuOpenFor === b.id ? 'z-20' : 'z-auto'}`}>
                 <div className="absolute top-2 right-2 flex flex-col gap-2">
                   {b.isRead && <Badge kind="gold">Read</Badge>}
                   {b.isTbr && <Badge kind="violet">TBR</Badge>}
