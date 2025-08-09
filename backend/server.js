@@ -7,12 +7,11 @@ const prisma = new PrismaClient(); // Initialize Prisma Client
 
 app.use(express.json());
 
-// --- IMPORTANT: UPDATE THIS ---
-// Add your frontend's Vercel URL to this list
+// This now includes your live frontend URL to fix the CORS error
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'https://warrior-momma-five.vercel.app' // Add your frontend project's URL here
+  'https://warrior-momma-five.vercel.app' 
 ];
 
 app.use(cors({
