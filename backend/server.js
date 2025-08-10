@@ -42,22 +42,18 @@ async function getCoverImageUrl(title, author) {
   }
 }
 
-// Build Prisma connectOrCreate payload for genres.
-// Accepts: { genre: "Dark Romance" } OR { genres: ["Dark Romance","Suspense"] }
+// Accepts {genre: "Dark"}, {genres: ["Dark","Suspense"]}, or {genres:[{name:"Dark"}]}
 function buildGenreMutation(body) {
   let names = [];
   if (Array.isArray(body.genres)) {
-    names = body.genres
-      .map(g => (typeof g === 'string' ? g : g?.name))
-      .filter(Boolean);
+    names = body.genres.map(g => (typeof g === 'string' ? g : g?.name)).filter(Boolean);
   } else if (body.genre) {
     names = [body.genre];
   }
   names = [...new Set(names.map(s => s.trim()))].filter(Boolean);
   if (names.length === 0) return null;
-
   return {
-    set: [], // replace existing with the provided set
+    set: [], // replace existing with provided list
     connectOrCreate: names.map(name => ({
       where: { name },
       create: { name }
@@ -65,7 +61,7 @@ function buildGenreMutation(body) {
   };
 }
 
-// ---------- Seed / Utilities ----------
+// ---------- Utilities ----------
 app.get('/api/seed', async (req, res) => {
   if (req.query.secret !== process.env.SEED_SECRET) {
     return res.status(401).json({ message: 'Unauthorized' });
@@ -159,103 +155,118 @@ createSectionRoutes('upcoming');
 
 // ---------- CREATE ----------
 app.post('/api/:section', async (req, res) => {
-  const { section } = req.params;
-  const b = req.body || {};
-  const id = b.id || crypto.randomUUID();
+  try {
+    const { section } = req.params;
+    const b = req.body || {};
+    const id = b.id || crypto.randomUUID();
 
-  // auto-cover if missing (best-effort)
-  let coverUrl = b.cover_image_url ?? null;
-  if (!coverUrl) coverUrl = await getCoverImageUrl(b.title, b.author);
+    let coverUrl = b.cover_image_url ?? null;
+    if (!coverUrl) coverUrl = await getCoverImageUrl(b.title, b.author);
 
-  const genreMutation = buildGenreMutation(b);
+    const genreMutation = buildGenreMutation(b);
 
-  const created = await prisma.book.create({
-    data: {
-      id,
-      title: b.title ?? '',
-      author: b.author ?? '',
-      cover_image_url: coverUrl,
-      notes: b.notes ?? '',
-      spice_level: b.spice_level != null ? Number(b.spice_level) : 0,
-      release_date: b.release_date ?? null,
-      isRead: !!b.isRead,
-      isTbr: !!b.isTbr,
-      owned: !!b.owned,
-      section,
-      ...(genreMutation ? { genres: genreMutation } : {})
-    },
-    include: { genres: true }
-  });
-  res.status(201).json(created);
+    const created = await prisma.book.create({
+      data: {
+        id,
+        section,
+        title: b.title ?? '',
+        author: b.author ?? '',
+        cover_image_url: coverUrl,
+        notes: b.notes ?? '',
+        spice_level: b.spice_level != null ? Number(b.spice_level) : 0,
+        release_date: b.release_date ?? null,
+        isRead: !!b.isRead,
+        isTbr: !!b.isTbr,
+        owned: !!b.owned,
+        ...(genreMutation ? { genres: genreMutation } : {})
+      },
+      include: { genres: true }
+    });
+    res.status(201).json(created);
+  } catch (err) {
+    console.error('POST error', err);
+    res.status(500).json({ error: 'Create failed', detail: err.message });
+  }
 });
 
 // ---------- UPDATE ----------
 app.put('/api/:section/:id', async (req, res) => {
-  const { section, id } = req.params;
-  const patch = req.body || {};
+  try {
+    const { section, id } = req.params;
+    const patch = req.body || {};
 
-  // Only allow switching within the same section via /move-book
-  // but we still ensure the record belongs to this section for safety.
-  const existing = await prisma.book.findUnique({ where: { id } });
-  if (!existing || existing.section !== section) {
-    return res.status(404).json({ error: 'Not found' });
+    const existing = await prisma.book.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: 'Not found' });
+    if (existing.section !== section) {
+      return res.status(400).json({ error: `Book is in '${existing.section}', not '${section}'` });
+    }
+
+    const genreMutation = buildGenreMutation(patch);
+
+    const updated = await prisma.book.update({
+      where: { id },
+      data: {
+        title: patch.title ?? undefined,
+        author: patch.author ?? undefined,
+        cover_image_url: patch.cover_image_url ?? undefined,
+        notes: patch.notes ?? undefined,
+        spice_level: patch.spice_level != null ? Number(patch.spice_level) : undefined,
+        release_date: patch.release_date ?? undefined,
+        isRead: patch.isRead != null ? !!patch.isRead : undefined,
+        isTbr: patch.isTbr != null ? !!patch.isTbr : undefined,
+        owned: patch.owned != null ? !!patch.owned : undefined,
+        ...(genreMutation ? { genres: genreMutation } : {})
+      },
+      include: { genres: true }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error('PUT error', err);
+    res.status(500).json({ error: 'Update failed', detail: err.message });
   }
-
-  const genreMutation = buildGenreMutation(patch);
-
-  const updated = await prisma.book.update({
-    where: { id },
-    data: {
-      title: patch.title ?? undefined,
-      author: patch.author ?? undefined,
-      cover_image_url: patch.cover_image_url ?? undefined,
-      notes: patch.notes ?? undefined,
-      spice_level: patch.spice_level != null ? Number(patch.spice_level) : undefined,
-      release_date: patch.release_date ?? undefined,
-      isRead: patch.isRead != null ? !!patch.isRead : undefined,
-      isTbr: patch.isTbr != null ? !!patch.isTbr : undefined,
-      owned: patch.owned != null ? !!patch.owned : undefined,
-      ...(genreMutation ? { genres: genreMutation } : {})
-    },
-    include: { genres: true }
-  });
-
-  res.json(updated);
 });
 
 // ---------- DELETE ----------
 app.delete('/api/:section/:id', async (req, res) => {
-  const { section, id } = req.params;
-
-  const existing = await prisma.book.findUnique({ where: { id } });
-  if (!existing || existing.section !== section) {
-    return res.status(404).json({ error: 'Not found' });
+  try {
+    const { section, id } = req.params;
+    const existing = await prisma.book.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: 'Not found' });
+    if (existing.section !== section) {
+      return res.status(400).json({ error: `Book is in '${existing.section}', not '${section}'` });
+    }
+    await prisma.book.delete({ where: { id } });
+    res.status(204).end();
+  } catch (err) {
+    console.error('DELETE error', err);
+    res.status(500).json({ error: 'Delete failed', detail: err.message });
   }
-
-  await prisma.book.delete({ where: { id } });
-  res.status(204).end();
 });
 
-// ---------- MOVE ----------
+// ---------- MOVE BETWEEN SECTIONS ----------
 app.post('/api/move-book', async (req, res) => {
-  const { bookId, sourceSection, destinationSection } = req.body || {};
-  if (!bookId || !sourceSection || !destinationSection) {
-    return res.status(400).json({ error: 'Missing fields' });
+  try {
+    const { bookId, sourceSection, destinationSection } = req.body || {};
+    if (!bookId || !sourceSection || !destinationSection) {
+      return res.status(400).json({ error: 'Missing fields' });
+    }
+    const existing = await prisma.book.findUnique({ where: { id: bookId } });
+    if (!existing) return res.status(404).json({ error: 'Not found' });
+    if (existing.section !== sourceSection) {
+      return res.status(400).json({ error: `Book is in '${existing.section}', not '${sourceSection}'` });
+    }
+    const moved = await prisma.book.update({
+      where: { id: bookId },
+      data: { section: destinationSection },
+      include: { genres: true }
+    });
+    res.json(moved);
+  } catch (err) {
+    console.error('MOVE error', err);
+    res.status(500).json({ error: 'Move failed', detail: err.message });
   }
-
-  const existing = await prisma.book.findUnique({ where: { id: bookId } });
-  if (!existing || existing.section !== sourceSection) {
-    return res.status(404).json({ error: 'Not found in source' });
-  }
-
-  const moved = await prisma.book.update({
-    where: { id: bookId },
-    data: { section: destinationSection },
-    include: { genres: true }
-  });
-
-  res.json(moved);
 });
 
-// ---------- Export for Vercel (do not app.listen here) ----------
+// ---------- Export for Vercel ----------
 module.exports = app;
