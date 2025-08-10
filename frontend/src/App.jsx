@@ -20,7 +20,6 @@ function Badge({ kind = 'jade', children }) {
   return <span className={cls}>{children}</span>;
 }
 
-// 🌶 helpers
 function spiceEmojis(level) {
   const n = Number.isFinite(level) ? Math.max(0, Math.min(5, Number(level))) : 0;
   return '🌶️'.repeat(n);
@@ -35,10 +34,10 @@ export default function App() {
   const [moveMenuOpenFor, setMoveMenuOpenFor] = useState(null);
 
   // Filters
-  const [filtersOpen, setFiltersOpen] = useState(false);          // collapsible panel
-  const [statusFilter, setStatusFilter] = useState('tbr');        // 'tbr' | 'read'
-  const [spiceFilter, setSpiceFilter] = useState('any');          // 'any' | 0..5
-  const [selectedGenres, setSelectedGenres] = useState(new Set()); // multi-select buttons
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('any');      // any | tbr | read
+  const [spiceFilter, setSpiceFilter] = useState('any');        // any | 0..5
+  const [selectedGenres, setSelectedGenres] = useState(new Set());
 
   useEffect(() => {
     if (!cache[active.key]) {
@@ -52,7 +51,6 @@ export default function App() {
 
   function handleTabClick(tab) {
     setActive(tab);
-    // keep filters but close move menus on tab change
     setMoveMenuOpenFor(null);
   }
 
@@ -133,7 +131,7 @@ export default function App() {
 
   const rawData = cache[active.key] || [];
 
-  // Build unique genre list from current tab data
+  // Build unique genre list
   const allGenres = useMemo(() => {
     const set = new Set();
     rawData.forEach(b => {
@@ -149,26 +147,22 @@ export default function App() {
   // Apply filters
   const data = useMemo(() => {
     return rawData.filter(b => {
-      // status: default TBR highlighted until Read selected
-      const isTbr = !!b.isTbr;
       const isRead = !!b.isRead;
+      const isTbr = b.isTbr ?? !isRead; // if not marked, treat as TBR unless read
+
       if (statusFilter === 'tbr' && !isTbr) return false;
       if (statusFilter === 'read' && !isRead) return false;
 
-      // spice
       if (spiceFilter !== 'any') {
         const target = Number(spiceFilter);
         const level = Number(b.spice_level ?? 0);
         if (level !== target) return false;
       }
 
-      // genres
       if (selectedGenres.size > 0) {
-        // normalize book genres to names
         const names = Array.isArray(b.genres)
           ? b.genres.map(g => (typeof g === 'string' ? g : g?.name)).filter(Boolean)
           : b.genre ? [b.genre] : [];
-        // must match at least one selected genre
         if (!names.some(n => selectedGenres.has(n))) return false;
       }
 
@@ -176,7 +170,6 @@ export default function App() {
     });
   }, [rawData, statusFilter, spiceFilter, selectedGenres]);
 
-  // Button styles for filters
   const pill = (active) =>
     `px-3 py-1 rounded-full border text-sm transition ${
       active ? 'bg-gold-ritual text-raven-ink border-gold-ritual'
@@ -220,34 +213,20 @@ export default function App() {
 
         {filtersOpen && (
           <div id="filters-panel" className="mt-4 p-4 rounded-[14px] bg-raven-ink/60 border border-white/10 space-y-4">
-            {/* Status: TBR / Read (default TBR) */}
+            {/* Status */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-white/70 text-sm">Status</span>
               <div className="inline-flex rounded-full bg-white/5 p-1 border border-white/10">
-                <button
-                  className={pill(statusFilter === 'tbr')}
-                  onClick={() => setStatusFilter('tbr')}
-                >
-                  TBR
-                </button>
-                <button
-                  className={`${pill(statusFilter === 'read')} ml-2`}
-                  onClick={() => setStatusFilter('read')}
-                >
-                  Read
-                </button>
+                <button className={pill(statusFilter === 'any')} onClick={() => setStatusFilter('any')}>Any</button>
+                <button className={`${pill(statusFilter === 'tbr')} ml-2 ring-1 ring-gold-ritual/40`} onClick={() => setStatusFilter('tbr')}>TBR</button>
+                <button className={`${pill(statusFilter === 'read')} ml-2`} onClick={() => setStatusFilter('read')}>Read</button>
               </div>
             </div>
 
             {/* Spice filter */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-white/70 text-sm">Spice</span>
-              <button
-                className={pill(spiceFilter === 'any')}
-                onClick={() => setSpiceFilter('any')}
-              >
-                Any
-              </button>
+              <button className={pill(spiceFilter === 'any')} onClick={() => setSpiceFilter('any')}>Any</button>
               {[0,1,2,3,4,5].map(n => (
                 <button
                   key={n}
@@ -256,12 +235,12 @@ export default function App() {
                   aria-label={`Spice ${n}`}
                   title={`Spice ${n}`}
                 >
-                  {spiceEmojis(n) || ' '}
+                  {spiceEmojis(n) || '0'}
                 </button>
               ))}
             </div>
 
-            {/* Genre filter buttons (multi-select) */}
+            {/* Genre filter buttons */}
             <div className="flex items-start gap-3 flex-wrap">
               <span className="text-white/70 text-sm mt-1">Genres</span>
               {allGenres.map(g => {
@@ -281,10 +260,7 @@ export default function App() {
                 );
               })}
               {(allGenres.length > 0 || selectedGenres.size > 0) && (
-                <button
-                  className="ml-2 btn btn-phantom"
-                  onClick={() => setSelectedGenres(new Set())}
-                >
+                <button className="ml-2 btn btn-phantom" onClick={() => setSelectedGenres(new Set())}>
                   Reset
                 </button>
               )}
@@ -304,7 +280,6 @@ export default function App() {
                 key={b.id}
                 className="card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-glow relative"
               >
-                {/* Status toggles on the card */}
                 <div className="absolute top-2 right-2 flex gap-2 z-10">
                   <button
                     onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)}
@@ -326,11 +301,11 @@ export default function App() {
                   <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
                   {b.author && <p className="text-white/80">{b.author}</p>}
 
-                  {/* Show ONLY spice level as emojis */}
+                  {/* Spice only */}
                   <div className="mt-3">
                     <Badge kind="rose">
                       <span aria-label={`Spice ${b.spice_level ?? 0}`}>
-                        {spiceEmojis(b.spice_level)}
+                        {spiceEmojis(b.spice_level) || '0'}
                       </span>
                     </Badge>
                   </div>
