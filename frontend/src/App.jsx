@@ -1,7 +1,34 @@
 import { useEffect, useMemo, useState } from 'react';
 import BookModal from './BookModal';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+/* =========================
+   API helpers (mixed-content safe)
+   ========================= */
+// In prod (Vercel), use same-origin /api; in dev, use localhost
+const API_ORIGIN =
+  (import.meta.env.VITE_API_BASE_URL && import.meta.env.VITE_API_BASE_URL.trim()) ||
+  (import.meta.env.PROD ? '' : 'http://localhost:5000');
+
+const API = (path) => `${API_ORIGIN}${path}`;
+
+// Abort after N ms so UI never hangs
+const fetchWithTimeout = (url, options = {}, ms = 15000) => {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort('timeout'), ms);
+  return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(id));
+};
+
+// Safely parse JSON or return null/text for empty bodies
+const parseMaybeJson = async (resp) => {
+  const text = await resp.text();
+  if (!text) return null;
+  try { return JSON.parse(text); } catch { return text; }
+};
+
+// Force HTTPS for covers to silence mixed-content warnings
+const secure = (u) => (u ? u.replace(/^http:\/\//i, 'https://') : u);
+
+/* ========================= */
 
 const tabs = [
   { key: 'library', label: 'Collection', endpoint: '/api/library' },
@@ -43,7 +70,7 @@ export default function App() {
   useEffect(() => {
     if (!cache[active.key]) {
       setLoading(true);
-      fetch(`${API_URL}${active.endpoint}`)
+      fetchWithTimeout(API(active.endpoint))
         .then((r) => r.json())
         .then((data) => setCache((prev) => ({ ...prev, [active.key]: data })))
         .finally(() => setLoading(false));
@@ -64,24 +91,18 @@ export default function App() {
     setIsModalOpen(false);
   };
 
-  // Robust save handling JSON or 204 responses
-  const parseMaybeJson = async (resp) => {
-    const text = await resp.text();
-    if (!text) return null;
-    try { return JSON.parse(text); } catch { return text; }
-  };
-
+  // Create / Update with timeout + robust parsing
   const handleSaveBook = async (bookData) => {
     const method = editingBook ? 'PUT' : 'POST';
     const url = editingBook
-      ? `${API_URL}${active.endpoint}/${editingBook.id}`
-      : `${API_URL}${active.endpoint}`;
+      ? API(`${active.endpoint}/${editingBook.id}`)
+      : API(active.endpoint);
 
-    const resp = await fetch(url, {
+    const resp = await fetchWithTimeout(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bookData)
-    });
+    }, 15000);
 
     if (!resp.ok) {
       const errBody = await parseMaybeJson(resp);
@@ -107,7 +128,7 @@ export default function App() {
   };
 
   const handleDeleteBook = async (bookId) => {
-    await fetch(`${API_URL}${active.endpoint}/${bookId}`, { method: 'DELETE' });
+    await fetchWithTimeout(API(`${active.endpoint}/${bookId}`), { method: 'DELETE' }, 15000);
     setCache(prev => ({
       ...prev,
       [active.key]: prev[active.key].filter(b => b.id !== bookId)
@@ -124,11 +145,11 @@ export default function App() {
       [destinationSection]: [...(prev[destinationSection] || []), bookToMove]
     }));
 
-    await fetch(`${API_URL}/api/move-book`, {
+    await fetchWithTimeout(API('/api/move-book'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookId: book.id, sourceSection, destinationSection })
-    });
+    }, 15000);
   };
 
   const handleUpdateBookStatus = async (book, field, value) => {
@@ -138,11 +159,11 @@ export default function App() {
       [active.key]: prev[active.key].map(b => b.id === book.id ? updatedBook : b)
     }));
 
-    await fetch(`${API_URL}${active.endpoint}/${book.id}`, {
+    await fetchWithTimeout(API(`${active.endpoint}/${book.id}`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ [field]: value })
-    });
+    }, 15000);
   };
 
   const rawData = cache[active.key] || [];
@@ -184,7 +205,7 @@ export default function App() {
     });
   }, [rawData, statusFilter, spiceFilter, selectedGenres]);
 
-  // Sorted view
+  // Sorted view (optional TBR first)
   const data = useMemo(() => {
     if (!tbrFirst) return filtered;
     const arr = [...filtered];
@@ -214,7 +235,9 @@ export default function App() {
           {tabs.map(t => (
             <button
               key={t.key}
-              className={`px-4 py-2 text-lg rounded-t-[14px] hover:text-white transition-colors duration-300 ${active.key === t.key ? 'text-white border-b-2 border-gold-ritual' : 'text-white/70'}`}
+              className={`px-4 py-2 text-lg rounded-t-[14px] hover:text-white transition-colors duration-300 ${
+                active.key === t.key ? 'text-white border-b-2 border-gold-ritual' : 'text-white/70'
+              }`}
               onClick={() => handleTabClick(t)}
             >
               {t.label}
@@ -296,7 +319,7 @@ export default function App() {
                   <button onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)} className={`btn text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white border-transparent' : 'btn-phantom'}`}>TBR</button>
                 </div>
 
-                <img src={b.cover_image_url} alt={b.title} className="w-full h-auto rounded-t-[14px]" />
+                <img src={secure(b.cover_image_url) || '/cover-placeholder.svg'} alt={b.title} className="w-full h-auto rounded-t-[14px]" />
                 <div className="p-4">
                   <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
                   {b.author && <p className="text-white/80">{b.author}</p>}
