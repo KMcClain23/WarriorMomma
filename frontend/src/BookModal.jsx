@@ -1,14 +1,11 @@
-// src/BookModal.jsx
 import { useEffect, useState } from 'react';
 
 function SpiceChips({ value, onChange }) {
-  const btn =
+  const base =
     'px-3 py-2 rounded-full border text-sm transition select-none ' +
     'focus:outline-none focus:ring-2 focus:ring-gold-ritual/60';
-
-  const activeCls = 'bg-gold-ritual text-raven-ink border-gold-ritual';
-  const idleCls   = 'btn-phantom';
-
+  const active = 'bg-gold-ritual text-raven-ink border-gold-ritual';
+  const idle = 'btn-phantom';
   const toEmojis = (n) => '🌶️'.repeat(n);
 
   return (
@@ -17,7 +14,7 @@ function SpiceChips({ value, onChange }) {
         <button
           key={n}
           type="button"
-          className={`${btn} ${value === n ? activeCls : idleCls}`}
+          className={`${base} ${value === n ? active : idle}`}
           onClick={() => onChange(n)}
           aria-pressed={value === n}
           aria-label={`Spice ${n}`}
@@ -39,18 +36,19 @@ export default function BookModal({ book, onClose, onSave }) {
     release_date: '',
     notes: '',
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (book) {
-      setForm({
-        title: book.title ?? '',
-        author: book.author ?? '',
-        genre: Array.isArray(book.genres) ? book.genres.join(', ') : (book.genre ?? ''),
-        spice_level: Number(book.spice_level ?? 0),
-        release_date: book.release_date ?? '',
-        notes: book.notes ?? '',
-      });
-    }
+    if (!book) return;
+    setForm({
+      title: book.title ?? '',
+      author: book.author ?? '',
+      genre: Array.isArray(book.genres) ? book.genres.join(', ') : (book.genre ?? ''),
+      spice_level: Number(book.spice_level ?? 0),
+      release_date: book.release_date ?? '',
+      notes: book.notes ?? '',
+    });
   }, [book]);
 
   const handleChange = (e) => {
@@ -58,15 +56,28 @@ export default function BookModal({ book, onClose, onSave }) {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // If you store genres as a single string, keep as-is.
-    // If you want array, split on commas here.
-    onSave({
-      ...book,
-      ...form,
-      spice_level: Number(form.spice_level),
-    });
+    setSaving(true);
+    setError('');
+
+    try {
+      // Submit ONLY the editable fields; id is in the URL (parent handles it)
+      await onSave({
+        title: form.title,
+        author: form.author,
+        genre: form.genre,
+        spice_level: Number(form.spice_level),
+        release_date: form.release_date,
+        notes: form.notes,
+      });
+      // Parent closes modal after successful save.
+    } catch (err) {
+      console.error(err);
+      setError('Could not save. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -83,6 +94,7 @@ export default function BookModal({ book, onClose, onSave }) {
             name="title"
             value={form.title}
             onChange={handleChange}
+            required
           />
           <input
             className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2"
@@ -112,7 +124,7 @@ export default function BookModal({ book, onClose, onSave }) {
                 aria-label={`Selected spice ${form.spice_level}`}
                 title={`Selected spice ${form.spice_level}`}
               >
-                {form.spice_level === 0 ? '0' : '🌶️'.repeat(Number(form.spice_level))}
+                {Number(form.spice_level) === 0 ? '0' : '🌶️'.repeat(Number(form.spice_level))}
               </div>
             </div>
           </div>
@@ -133,19 +145,23 @@ export default function BookModal({ book, onClose, onSave }) {
             onChange={handleChange}
           />
 
+          {error && <p className="text-sm text-red-300">{error}</p>}
+
           <div className="flex items-center justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
               className="btn btn-phantom rounded-full px-4 py-2"
+              disabled={saving}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-full px-4 py-2 bg-gold-ritual text-raven-ink hover:brightness-105"
+              className={`rounded-full px-4 py-2 bg-gold-ritual text-raven-ink hover:brightness-105 ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
+              disabled={saving}
             >
-              Save
+              {saving ? 'Saving…' : 'Save'}
             </button>
           </div>
         </form>
