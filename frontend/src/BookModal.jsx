@@ -62,13 +62,13 @@ export default function BookModal({ book, onClose, onSave }) {
       await onSave({
         title: form.title,
         author: form.author,
-        genre: form.genre,                // backend accepts single genre OR genres[]
+        genre: form.genre, // backend accepts single or array
         spice_level: Number(form.spice_level),
         release_date: form.release_date,
         notes: form.notes,
       });
     } catch (err) {
-      setError(err?.message || 'Save failed');
+      setError(String(err?.message || 'Save failed'));
     } finally {
       setSaving(false);
     }
@@ -84,6 +84,7 @@ export default function BookModal({ book, onClose, onSave }) {
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Title" name="title" value={form.title} onChange={handleChange} required />
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Author" name="author" value={form.author} onChange={handleChange} />
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Genre" name="genre" value={form.genre} onChange={handleChange} />
+
           <div>
             <label className="block text-sm text-white/70 mb-2">Spice</label>
             <div className="flex items-center justify-between gap-4">
@@ -93,9 +94,12 @@ export default function BookModal({ book, onClose, onSave }) {
               </div>
             </div>
           </div>
+
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Release date (YYYY-MM-DD)" name="release_date" value={form.release_date} onChange={handleChange} />
           <textarea className="w-full min-h-28 rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Notes" name="notes" value={form.notes} onChange={handleChange} />
+
           {error && <p className="text-sm text-red-300">{error}</p>}
+
           <div className="flex items-center justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="btn btn-phantom rounded-full px-4 py-2" disabled={saving}>Cancel</button>
             <button type="submit" className={`rounded-full px-4 py-2 bg-gold-ritual text-raven-ink hover:brightness-105 ${saving ? 'opacity-70 cursor-not-allowed' : ''}`} disabled={saving}>

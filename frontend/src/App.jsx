@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import BookModal from './BookModal';
 
-/* ==== API helpers (prod uses same-origin /api, dev uses localhost) ==== */
+/* ==== API helpers (prod same-origin /api, dev localhost) ==== */
 const API_ORIGIN =
   (import.meta.env.VITE_API_BASE_URL && import.meta.env.VITE_API_BASE_URL.trim()) ||
   (import.meta.env.PROD ? '' : 'http://localhost:5000');
@@ -21,7 +21,7 @@ const parseMaybeJson = async (resp) => {
 };
 
 const secure = (u) => (u ? u.replace(/^http:\/\//i, 'https://') : u);
-/* ===================================================================== */
+/* ============================================================ */
 
 const tabs = [
   { key: 'library', label: 'Collection', endpoint: '/api/library' },
@@ -45,15 +45,14 @@ export default function App() {
   const [active, setActive] = useState(tabs[0]);
   const [cache, setCache] = useState({});
   const [loading, setLoading] = useState(false);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [moveMenuOpenFor, setMoveMenuOpenFor] = useState(null);
 
   // Filters
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('any'); // any | tbr | read
-  const [spiceFilter, setSpiceFilter] = useState('any');   // any | 0..5
+  const [statusFilter, setStatusFilter] = useState('any');
+  const [spiceFilter, setSpiceFilter] = useState('any');
   const [selectedGenres, setSelectedGenres] = useState(new Set());
   const [tbrFirst, setTbrFirst] = useState(true);
 
@@ -71,12 +70,10 @@ export default function App() {
   const handleOpenModal = (book = null) => { setEditingBook(book); setIsModalOpen(true); };
   const handleCloseModal = () => { setEditingBook(null); setIsModalOpen(false); };
 
-  /* ========== SAVE (Create/Update) ========== */
+  // ------- SAVE (create / update) -------
   const handleSaveBook = async (bookData) => {
     const method = editingBook ? 'PUT' : 'POST';
-    const url = editingBook
-      ? API(`${active.endpoint}/${editingBook.id}`)
-      : API(active.endpoint);
+    const url = editingBook ? API(`${active.endpoint}/${editingBook.id}`) : API(active.endpoint);
 
     const resp = await fetchWithTimeout(url, {
       method,
@@ -85,30 +82,30 @@ export default function App() {
     }, 15000);
 
     if (!resp.ok) {
-      const errBody = await parseMaybeJson(resp);
-      throw new Error(typeof errBody === 'string' ? errBody : (errBody?.error || 'Save failed'));
+      // surface full info so you can see what's wrong
+      const text = await resp.text();
+      throw new Error(`${resp.status} ${resp.statusText} — ${text.slice(0, 300)}`);
     }
 
     const saved = await parseMaybeJson(resp);
-    const updated = editingBook ? saved : saved;
 
     if (editingBook) {
       setCache((p) => ({
         ...p,
-        [active.key]: p[active.key].map((b) => (b.id === editingBook.id ? updated : b))
+        [active.key]: p[active.key].map((b) => (b.id === editingBook.id ? saved : b))
       }));
     } else {
-      setCache((p) => ({ ...p, [active.key]: [...(p[active.key] || []), updated] }));
+      setCache((p) => ({ ...p, [active.key]: [...(p[active.key] || []), saved] }));
     }
     handleCloseModal();
   };
-  /* ========================================= */
+  // -------------------------------------
 
   const handleDeleteBook = async (bookId) => {
     const resp = await fetchWithTimeout(API(`${active.endpoint}/${bookId}`), { method: 'DELETE' }, 15000);
     if (!resp.ok && resp.status !== 204) {
-      const errBody = await parseMaybeJson(resp);
-      throw new Error(typeof errBody === 'string' ? errBody : (errBody?.error || 'Delete failed'));
+      const text = await resp.text();
+      throw new Error(`${resp.status} ${resp.statusText} — ${text.slice(0, 300)}`);
     }
     setCache((p) => ({ ...p, [active.key]: p[active.key].filter((b) => b.id !== bookId) }));
   };
@@ -117,7 +114,6 @@ export default function App() {
     const sourceSection = active.key;
     const bookToMove = cache[sourceSection].find((b) => b.id === book.id);
 
-    // optimistic UI
     setCache((p) => ({
       ...p,
       [sourceSection]: p[sourceSection].filter((b) => b.id !== book.id),
@@ -131,7 +127,7 @@ export default function App() {
     }, 15000);
 
     if (!resp.ok) {
-      // revert if failed
+      // revert on failure
       setCache((p) => ({
         ...p,
         [destinationSection]: (p[destinationSection] || []).filter((b) => b.id !== book.id),
@@ -154,7 +150,7 @@ export default function App() {
     }, 15000);
 
     if (!resp.ok) {
-      // reload section to resync if failed
+      // resync if failed
       const fresh = await fetchWithTimeout(API(active.endpoint)).then((r) => r.json());
       setCache((p) => ({ ...p, [active.key]: fresh }));
     }
@@ -162,6 +158,7 @@ export default function App() {
 
   const rawData = cache[active.key] || [];
 
+  // build unique genre list
   const allGenres = useMemo(() => {
     const s = new Set();
     rawData.forEach((b) => {
@@ -171,6 +168,7 @@ export default function App() {
     return [...s].filter(Boolean).sort((a, b) => a.localeCompare(b));
   }, [rawData]);
 
+  // apply filters
   const filtered = useMemo(() => {
     return rawData.filter((b) => {
       const isRead = !!b.isRead;
@@ -193,6 +191,7 @@ export default function App() {
     });
   }, [rawData, statusFilter, spiceFilter, selectedGenres]);
 
+  // optional TBR-first ordering
   const data = useMemo(() => {
     if (!tbrFirst) return filtered;
     const arr = [...filtered];
@@ -229,7 +228,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Collapsible Filters */}
+      {/* Filters */}
       <div className="mt-4">
         <button className="btn btn-phantom" onClick={() => setFiltersOpen((v) => !v)} aria-expanded={filtersOpen} aria-controls="filters-panel">
           {filtersOpen ? 'Hide Filters' : 'Show Filters'}
