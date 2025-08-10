@@ -39,7 +39,6 @@ export default function BookModal({ book, onClose, onSave }) {
 
   useEffect(() => {
     if (!book) return;
-    // Normalize genre(s) to a comma string for editing
     const genreString = Array.isArray(book.genres)
       ? book.genres.map(g => (typeof g === 'string' ? g : g?.name)).filter(Boolean).join(', ')
       : (typeof book.genre === 'string' ? book.genre : book.genre?.name) || '';
@@ -64,11 +63,10 @@ export default function BookModal({ book, onClose, onSave }) {
     setSaving(true);
     setError('');
     try {
-      // Send simple fields; backend can decide whether to store `genre` or `genres`.
       await onSave({
         title: form.title,
         author: form.author,
-        genre: form.genre, // simple string
+        genre: form.genre,
         spice_level: Number(form.spice_level),
         release_date: form.release_date,
         notes: form.notes,
@@ -90,7 +88,7 @@ export default function BookModal({ book, onClose, onSave }) {
         <form onSubmit={handleSave} className="p-5 space-y-4">
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Title" name="title" value={form.title} onChange={handleChange} required />
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Author" name="author" value={form.author} onChange={handleChange} />
-          <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Genre (comma separated or single)" name="genre" value={form.genre} onChange={handleChange} />
+          <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Genre" name="genre" value={form.genre} onChange={handleChange} />
 
           <div>
             <label className="block text-sm text-white/70 mb-2">Spice</label>

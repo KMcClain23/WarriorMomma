@@ -64,7 +64,7 @@ export default function App() {
     setIsModalOpen(false);
   };
 
-  // ---------- FIXED: robust save with non-JSON/204 handling ----------
+  // Robust save handling JSON or 204 responses
   const parseMaybeJson = async (resp) => {
     const text = await resp.text();
     if (!text) return null;
@@ -88,8 +88,9 @@ export default function App() {
       throw new Error(typeof errBody === 'string' ? errBody : 'Save failed');
     }
 
-    // some backends return 204 No Content on PUT
-    const savedBook = resp.status === 204 ? { ...editingBook, ...bookData } : await parseMaybeJson(resp);
+    const savedBook = resp.status === 204
+      ? { ...editingBook, ...bookData }
+      : await parseMaybeJson(resp);
 
     if (editingBook) {
       setCache(prev => ({
@@ -104,7 +105,6 @@ export default function App() {
     }
     handleCloseModal();
   };
-  // -------------------------------------------------------------------
 
   const handleDeleteBook = async (bookId) => {
     await fetch(`${API_URL}${active.endpoint}/${bookId}`, { method: 'DELETE' });
@@ -147,7 +147,7 @@ export default function App() {
 
   const rawData = cache[active.key] || [];
 
-  // Unique genres (normalize to names)
+  // Unique genres
   const allGenres = useMemo(() => {
     const set = new Set();
     rawData.forEach(b => {
@@ -160,7 +160,7 @@ export default function App() {
     return [...set].filter(Boolean).sort((a, b) => a.localeCompare(b));
   }, [rawData]);
 
-  // Filtered
+  // Filtered list
   const filtered = useMemo(() => {
     return rawData.filter(b => {
       const isRead = !!b.isRead;
@@ -184,7 +184,7 @@ export default function App() {
     });
   }, [rawData, statusFilter, spiceFilter, selectedGenres]);
 
-  // Sorted (optional TBR first)
+  // Sorted view
   const data = useMemo(() => {
     if (!tbrFirst) return filtered;
     const arr = [...filtered];
@@ -223,7 +223,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Filters (collapsible) */}
+      {/* Filters */}
       <div className="mt-4">
         <button
           className="btn btn-phantom"
@@ -236,7 +236,6 @@ export default function App() {
 
         {filtersOpen && (
           <div id="filters-panel" className="mt-4 p-4 rounded-[14px] bg-raven-ink/60 border border-white/10 space-y-4">
-            {/* Status */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-white/70 text-sm">Status</span>
               <button className={pill(statusFilter === 'any')} onClick={() => setStatusFilter('any')}>Any</button>
@@ -244,7 +243,6 @@ export default function App() {
               <button className={`${pill(statusFilter === 'read')} ml-1`} onClick={() => setStatusFilter('read')}>Read</button>
             </div>
 
-            {/* Spice */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-white/70 text-sm">Spice</span>
               <button className={pill(spiceFilter === 'any')} onClick={() => setSpiceFilter('any')}>Any</button>
@@ -255,7 +253,6 @@ export default function App() {
               ))}
             </div>
 
-            {/* Genres */}
             <div className="flex items-start gap-3 flex-wrap">
               <span className="text-white/70 text-sm mt-1">Genres</span>
               {allGenres.map(g => {
@@ -277,7 +274,6 @@ export default function App() {
               <button className="ml-2 btn btn-phantom" onClick={() => setSelectedGenres(new Set())}>Reset</button>
             </div>
 
-            {/* Order */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-white/70 text-sm">Order</span>
               <button className={pill(!tbrFirst)} onClick={() => setTbrFirst(false)}>Default</button>
