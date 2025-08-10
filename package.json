@@ -6,7 +6,8 @@
     "dev": "pnpm --parallel --stream -r dev",
     "start": "pnpm --parallel --stream -r start",
     "postinstall": "prisma generate",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "update-covers": "node backend/prisma/update-covers.js"
   },
   "prisma": {
     "schema": "backend/prisma/schema.prisma"
