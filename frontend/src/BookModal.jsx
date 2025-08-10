@@ -42,7 +42,6 @@ export default function BookModal({ book, onClose, onSave }) {
     const genreString = Array.isArray(book.genres)
       ? book.genres.map(g => (typeof g === 'string' ? g : g?.name)).filter(Boolean).join(', ')
       : (typeof book.genre === 'string' ? book.genre : book.genre?.name) || '';
-
     setForm({
       title: book.title ?? '',
       author: book.author ?? '',
@@ -53,10 +52,7 @@ export default function BookModal({ book, onClose, onSave }) {
     });
   }, [book]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
+  const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -66,13 +62,13 @@ export default function BookModal({ book, onClose, onSave }) {
       await onSave({
         title: form.title,
         author: form.author,
-        genre: form.genre,
+        genre: form.genre,                // backend accepts single genre OR genres[]
         spice_level: Number(form.spice_level),
         release_date: form.release_date,
         notes: form.notes,
       });
     } catch (err) {
-      setError(err?.message || 'Could not save. Please try again.');
+      setError(err?.message || 'Save failed');
     } finally {
       setSaving(false);
     }
@@ -84,12 +80,10 @@ export default function BookModal({ book, onClose, onSave }) {
         <header className="p-5 border-b border-white/10">
           <h2 className="text-2xl font-semibold">Edit Book</h2>
         </header>
-
         <form onSubmit={handleSave} className="p-5 space-y-4">
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Title" name="title" value={form.title} onChange={handleChange} required />
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Author" name="author" value={form.author} onChange={handleChange} />
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Genre" name="genre" value={form.genre} onChange={handleChange} />
-
           <div>
             <label className="block text-sm text-white/70 mb-2">Spice</label>
             <div className="flex items-center justify-between gap-4">
@@ -99,12 +93,9 @@ export default function BookModal({ book, onClose, onSave }) {
               </div>
             </div>
           </div>
-
           <input className="w-full rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Release date (YYYY-MM-DD)" name="release_date" value={form.release_date} onChange={handleChange} />
           <textarea className="w-full min-h-28 rounded-lg bg-black/30 border border-white/10 px-3 py-2" placeholder="Notes" name="notes" value={form.notes} onChange={handleChange} />
-
           {error && <p className="text-sm text-red-300">{error}</p>}
-
           <div className="flex items-center justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="btn btn-phantom rounded-full px-4 py-2" disabled={saving}>Cancel</button>
             <button type="submit" className={`rounded-full px-4 py-2 bg-gold-ritual text-raven-ink hover:brightness-105 ${saving ? 'opacity-70 cursor-not-allowed' : ''}`} disabled={saving}>

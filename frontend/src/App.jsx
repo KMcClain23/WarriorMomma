@@ -1,34 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
 import BookModal from './BookModal';
 
-/* =========================
-   API helpers (mixed-content safe)
-   ========================= */
-// In prod (Vercel), use same-origin /api; in dev, use localhost
+/* ==== API helpers (prod uses same-origin /api, dev uses localhost) ==== */
 const API_ORIGIN =
   (import.meta.env.VITE_API_BASE_URL && import.meta.env.VITE_API_BASE_URL.trim()) ||
   (import.meta.env.PROD ? '' : 'http://localhost:5000');
 
 const API = (path) => `${API_ORIGIN}${path}`;
 
-// Abort after N ms so UI never hangs
 const fetchWithTimeout = (url, options = {}, ms = 15000) => {
   const ctrl = new AbortController();
   const id = setTimeout(() => ctrl.abort('timeout'), ms);
   return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(id));
 };
 
-// Safely parse JSON or return null/text for empty bodies
 const parseMaybeJson = async (resp) => {
   const text = await resp.text();
   if (!text) return null;
   try { return JSON.parse(text); } catch { return text; }
 };
 
-// Force HTTPS for covers to silence mixed-content warnings
 const secure = (u) => (u ? u.replace(/^http:\/\//i, 'https://') : u);
-
-/* ========================= */
+/* ===================================================================== */
 
 const tabs = [
   { key: 'library', label: 'Collection', endpoint: '/api/library' },
@@ -46,16 +39,13 @@ function Badge({ kind = 'jade', children }) {
     'badge badge-jade';
   return <span className={cls}>{children}</span>;
 }
-
-function spiceEmojis(n) {
-  const v = Number.isFinite(n) ? Math.max(0, Math.min(5, Number(n))) : 0;
-  return '🌶️'.repeat(v);
-}
+const spiceEmojis = (n) => '🌶️'.repeat(Number.isFinite(n) ? Math.max(0, Math.min(5, Number(n))) : 0);
 
 export default function App() {
   const [active, setActive] = useState(tabs[0]);
   const [cache, setCache] = useState({});
   const [loading, setLoading] = useState(false);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [moveMenuOpenFor, setMoveMenuOpenFor] = useState(null);
@@ -72,26 +62,16 @@ export default function App() {
       setLoading(true);
       fetchWithTimeout(API(active.endpoint))
         .then((r) => r.json())
-        .then((data) => setCache((prev) => ({ ...prev, [active.key]: data })))
+        .then((data) => setCache((p) => ({ ...p, [active.key]: data })))
         .finally(() => setLoading(false));
     }
   }, [active, cache]);
 
-  const handleTabClick = (t) => {
-    setActive(t);
-    setMoveMenuOpenFor(null);
-  };
+  const handleTabClick = (t) => { setActive(t); setMoveMenuOpenFor(null); };
+  const handleOpenModal = (book = null) => { setEditingBook(book); setIsModalOpen(true); };
+  const handleCloseModal = () => { setEditingBook(null); setIsModalOpen(false); };
 
-  const handleOpenModal = (book = null) => {
-    setEditingBook(book);
-    setIsModalOpen(true);
-  };
-  const handleCloseModal = () => {
-    setEditingBook(null);
-    setIsModalOpen(false);
-  };
-
-  // Create / Update with timeout + robust parsing
+  /* ========== SAVE (Create/Update) ========== */
   const handleSaveBook = async (bookData) => {
     const method = editingBook ? 'PUT' : 'POST';
     const url = editingBook
@@ -106,87 +86,95 @@ export default function App() {
 
     if (!resp.ok) {
       const errBody = await parseMaybeJson(resp);
-      throw new Error(typeof errBody === 'string' ? errBody : 'Save failed');
+      throw new Error(typeof errBody === 'string' ? errBody : (errBody?.error || 'Save failed'));
     }
 
-    const savedBook = resp.status === 204
-      ? { ...editingBook, ...bookData }
-      : await parseMaybeJson(resp);
+    const saved = await parseMaybeJson(resp);
+    const updated = editingBook ? saved : saved;
 
     if (editingBook) {
-      setCache(prev => ({
-        ...prev,
-        [active.key]: prev[active.key].map(b => b.id === editingBook.id ? savedBook : b)
+      setCache((p) => ({
+        ...p,
+        [active.key]: p[active.key].map((b) => (b.id === editingBook.id ? updated : b))
       }));
     } else {
-      setCache(prev => ({
-        ...prev,
-        [active.key]: [...(prev[active.key] || []), savedBook]
-      }));
+      setCache((p) => ({ ...p, [active.key]: [...(p[active.key] || []), updated] }));
     }
     handleCloseModal();
   };
+  /* ========================================= */
 
   const handleDeleteBook = async (bookId) => {
-    await fetchWithTimeout(API(`${active.endpoint}/${bookId}`), { method: 'DELETE' }, 15000);
-    setCache(prev => ({
-      ...prev,
-      [active.key]: prev[active.key].filter(b => b.id !== bookId)
-    }));
+    const resp = await fetchWithTimeout(API(`${active.endpoint}/${bookId}`), { method: 'DELETE' }, 15000);
+    if (!resp.ok && resp.status !== 204) {
+      const errBody = await parseMaybeJson(resp);
+      throw new Error(typeof errBody === 'string' ? errBody : (errBody?.error || 'Delete failed'));
+    }
+    setCache((p) => ({ ...p, [active.key]: p[active.key].filter((b) => b.id !== bookId) }));
   };
 
   const handleMoveBook = async (book, destinationSection) => {
     const sourceSection = active.key;
-    const bookToMove = cache[sourceSection].find(b => b.id === book.id);
+    const bookToMove = cache[sourceSection].find((b) => b.id === book.id);
 
-    setCache(prev => ({
-      ...prev,
-      [sourceSection]: prev[sourceSection].filter(b => b.id !== book.id),
-      [destinationSection]: [...(prev[destinationSection] || []), bookToMove]
+    // optimistic UI
+    setCache((p) => ({
+      ...p,
+      [sourceSection]: p[sourceSection].filter((b) => b.id !== book.id),
+      [destinationSection]: [...(p[destinationSection] || []), bookToMove]
     }));
 
-    await fetchWithTimeout(API('/api/move-book'), {
+    const resp = await fetchWithTimeout(API('/api/move-book'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookId: book.id, sourceSection, destinationSection })
     }, 15000);
+
+    if (!resp.ok) {
+      // revert if failed
+      setCache((p) => ({
+        ...p,
+        [destinationSection]: (p[destinationSection] || []).filter((b) => b.id !== book.id),
+        [sourceSection]: [...(p[sourceSection] || []), bookToMove]
+      }));
+    }
   };
 
   const handleUpdateBookStatus = async (book, field, value) => {
-    const updatedBook = { ...book, [field]: value };
-    setCache(prev => ({
-      ...prev,
-      [active.key]: prev[active.key].map(b => b.id === book.id ? updatedBook : b)
+    const optimistic = { ...book, [field]: value };
+    setCache((p) => ({
+      ...p,
+      [active.key]: p[active.key].map((b) => (b.id === book.id ? optimistic : b))
     }));
 
-    await fetchWithTimeout(API(`${active.endpoint}/${book.id}`), {
+    const resp = await fetchWithTimeout(API(`${active.endpoint}/${book.id}`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ [field]: value })
     }, 15000);
+
+    if (!resp.ok) {
+      // reload section to resync if failed
+      const fresh = await fetchWithTimeout(API(active.endpoint)).then((r) => r.json());
+      setCache((p) => ({ ...p, [active.key]: fresh }));
+    }
   };
 
   const rawData = cache[active.key] || [];
 
-  // Unique genres
   const allGenres = useMemo(() => {
-    const set = new Set();
-    rawData.forEach(b => {
-      if (Array.isArray(b.genres)) {
-        b.genres.forEach(g => set.add(typeof g === 'string' ? g : g?.name));
-      } else if (b.genre) {
-        set.add(typeof b.genre === 'string' ? b.genre : b.genre?.name);
-      }
+    const s = new Set();
+    rawData.forEach((b) => {
+      if (Array.isArray(b.genres)) b.genres.forEach((g) => s.add(typeof g === 'string' ? g : g?.name));
+      else if (b.genre) s.add(typeof b.genre === 'string' ? b.genre : b.genre?.name);
     });
-    return [...set].filter(Boolean).sort((a, b) => a.localeCompare(b));
+    return [...s].filter(Boolean).sort((a, b) => a.localeCompare(b));
   }, [rawData]);
 
-  // Filtered list
   const filtered = useMemo(() => {
-    return rawData.filter(b => {
+    return rawData.filter((b) => {
       const isRead = !!b.isRead;
       const isTbr = b.isTbr ?? !isRead;
-
       if (statusFilter === 'tbr' && !isTbr) return false;
       if (statusFilter === 'read' && !isRead) return false;
 
@@ -195,32 +183,29 @@ export default function App() {
         if (lvl !== Number(spiceFilter)) return false;
       }
 
-      if (selectedGenres.size > 0) {
+      if (selectedGenres.size) {
         const names = Array.isArray(b.genres)
-          ? b.genres.map(g => (typeof g === 'string' ? g : g?.name)).filter(Boolean)
+          ? b.genres.map((g) => (typeof g === 'string' ? g : g?.name)).filter(Boolean)
           : b.genre ? [typeof b.genre === 'string' ? b.genre : b.genre?.name] : [];
-        if (!names.some(n => selectedGenres.has(n))) return false;
+        if (!names.some((n) => selectedGenres.has(n))) return false;
       }
       return true;
     });
   }, [rawData, statusFilter, spiceFilter, selectedGenres]);
 
-  // Sorted view (optional TBR first)
   const data = useMemo(() => {
     if (!tbrFirst) return filtered;
     const arr = [...filtered];
     return arr.sort((a, b) => {
       const aRead = !!a.isRead, bRead = !!b.isRead;
-      const aTbr  = a.isTbr ?? !aRead;
-      const bTbr  = b.isTbr ?? !bRead;
+      const aTbr = a.isTbr ?? !aRead, bTbr = b.isTbr ?? !bRead;
       if (aTbr !== bTbr) return aTbr ? -1 : 1;
       if (aRead !== bRead) return aRead ? 1 : -1;
       return Number(b.spice_level ?? 0) - Number(a.spice_level ?? 0);
     });
   }, [filtered, tbrFirst]);
 
-  const pill = (is) =>
-    `px-3 py-1 rounded-full border text-sm transition ${is ? 'bg-gold-ritual text-raven-ink border-gold-ritual' : 'btn-phantom'}`;
+  const pill = (on) => `px-3 py-1 rounded-full border text-sm transition ${on ? 'bg-gold-ritual text-raven-ink border-gold-ritual' : 'btn-phantom'}`;
 
   return (
     <div className="min-h-dvh p-6 max-w-6xl mx-auto bg-paper bg-opacity-90">
@@ -232,12 +217,10 @@ export default function App() {
         <p className="mt-3 text-white/80 text-lg">Dark romance, romantasy, and neon noir.</p>
 
         <div className="mt-8 border-b border-white/10 flex gap-2">
-          {tabs.map(t => (
+          {tabs.map((t) => (
             <button
               key={t.key}
-              className={`px-4 py-2 text-lg rounded-t-[14px] hover:text-white transition-colors duration-300 ${
-                active.key === t.key ? 'text-white border-b-2 border-gold-ritual' : 'text-white/70'
-              }`}
+              className={`px-4 py-2 text-lg rounded-t-[14px] hover:text-white transition-colors duration-300 ${active.key === t.key ? 'text-white border-b-2 border-gold-ritual' : 'text-white/70'}`}
               onClick={() => handleTabClick(t)}
             >
               {t.label}
@@ -246,14 +229,9 @@ export default function App() {
         </div>
       </header>
 
-      {/* Filters */}
+      {/* Collapsible Filters */}
       <div className="mt-4">
-        <button
-          className="btn btn-phantom"
-          onClick={() => setFiltersOpen((v) => !v)}
-          aria-expanded={filtersOpen}
-          aria-controls="filters-panel"
-        >
+        <button className="btn btn-phantom" onClick={() => setFiltersOpen((v) => !v)} aria-expanded={filtersOpen} aria-controls="filters-panel">
           {filtersOpen ? 'Hide Filters' : 'Show Filters'}
         </button>
 
@@ -269,7 +247,7 @@ export default function App() {
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-white/70 text-sm">Spice</span>
               <button className={pill(spiceFilter === 'any')} onClick={() => setSpiceFilter('any')}>Any</button>
-              {[0,1,2,3,4,5].map(n => (
+              {[0,1,2,3,4,5].map((n) => (
                 <button key={n} className={pill(spiceFilter === n)} onClick={() => setSpiceFilter(n)} title={`Spice ${n}`}>
                   {spiceEmojis(n) || '0'}
                 </button>
@@ -278,18 +256,14 @@ export default function App() {
 
             <div className="flex items-start gap-3 flex-wrap">
               <span className="text-white/70 text-sm mt-1">Genres</span>
-              {allGenres.map(g => {
+              {allGenres.map((g) => {
                 const isOn = selectedGenres.has(g);
                 return (
-                  <button
-                    key={g}
-                    className={pill(isOn)}
-                    onClick={() => {
-                      const next = new Set(selectedGenres);
-                      isOn ? next.delete(g) : next.add(g);
-                      setSelectedGenres(next);
-                    }}
-                  >
+                  <button key={g} className={pill(isOn)} onClick={() => {
+                    const next = new Set(selectedGenres);
+                    isOn ? next.delete(g) : next.add(g);
+                    setSelectedGenres(next);
+                  }}>
                     {g}
                   </button>
                 );
@@ -323,12 +297,7 @@ export default function App() {
                 <div className="p-4">
                   <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
                   {b.author && <p className="text-white/80">{b.author}</p>}
-
-                  <div className="mt-3">
-                    <Badge kind="rose">
-                      <span aria-label={`Spice ${b.spice_level ?? 0}`}>{spiceEmojis(b.spice_level) || '0'}</span>
-                    </Badge>
-                  </div>
+                  <div className="mt-3"><Badge kind="rose"><span aria-label={`Spice ${b.spice_level ?? 0}`}>{spiceEmojis(b.spice_level) || '0'}</span></Badge></div>
 
                   <div className="mt-3 text-sm text-white/70 space-y-1">
                     {b.release_date && <div>Release: {b.release_date}</div>}
@@ -342,7 +311,7 @@ export default function App() {
                       <button onClick={() => setMoveMenuOpenFor(moveMenuOpenFor === b.id ? null : b.id)} className="btn btn-phantom">Move</button>
                       {moveMenuOpenFor === b.id && (
                         <div className="absolute top-full right-0 mt-2 w-48 bg-raven-ink rounded-[14px] shadow-lg z-10">
-                          {tabs.filter(t => t.key !== active.key).map(t => (
+                          {tabs.filter((t) => t.key !== active.key).map((t) => (
                             <button key={t.key} onClick={() => { handleMoveBook(b, t.key); setMoveMenuOpenFor(null); }} className="w-full text-left px-4 py-2 text-sm text-white hover:bg-plum-velvet">
                               Move to {t.label}
                             </button>
@@ -358,16 +327,10 @@ export default function App() {
         )}
       </section>
 
-      <button onClick={() => handleOpenModal()} className="fixed bottom-8 right-8 w-16 h-16 bg-gold-ritual text-raven-ink rounded-full shadow-lg flex items-center justify-center text-4xl font-bold">
-        +
-      </button>
+      <button onClick={() => handleOpenModal()} className="fixed bottom-8 right-8 w-16 h-16 bg-gold-ritual text-raven-ink rounded-full shadow-lg flex items-center justify-center text-4xl font-bold">+</button>
 
       {isModalOpen && (
-        <BookModal
-          book={editingBook}
-          onClose={handleCloseModal}
-          onSave={handleSaveBook}
-        />
+        <BookModal book={editingBook} onClose={handleCloseModal} onSave={handleSaveBook} />
       )}
     </div>
   );
