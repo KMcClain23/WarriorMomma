@@ -29,10 +29,8 @@ app.use(cors({
 async function getCoverImageUrl(title, author) {
   if (!title || !author) return null;
   const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
-  if (!apiKey) {
-    console.log("Google Books API key is missing.");
-    return null;
-  }
+  if (!apiKey) return null;
+
   const query = encodeURIComponent(`intitle:${title}+inauthor:${author}`);
   const url = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${apiKey}`;
   try {
@@ -48,17 +46,13 @@ async function getCoverImageUrl(title, author) {
 
 // --- UTILITY ROUTES ---
 
-// UPDATED: This route now seeds all three sections
+// MODIFIED: This route now uses `upsert` to prevent duplicate ID errors
 app.get('/api/seed', async (req, res) => {
   if (req.query.secret !== process.env.SEED_SECRET) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
-    // Clear existing data for a fresh start
-    await prisma.book.deleteMany({});
-    await prisma.genre.deleteMany({});
-
     const sectionsToSeed = ['library', 'recommended', 'upcoming'];
 
     for (const section of sectionsToSeed) {
@@ -67,23 +61,28 @@ app.get('/api/seed', async (req, res) => {
       const booksData = JSON.parse(await fs.readFile(dataPath, 'utf-8'));
 
       for (const book of booksData) {
-        // Use a more robust check for genre-like properties
         const genreName = book.genre || book['genre/theme'] || book['genre/category'];
-        if (!genreName) continue;
+        if (!book.id || !genreName) continue;
 
-        await prisma.book.create({
-          data: {
-            id: book.id,
-            title: book.title,
-            author: book.author,
-            cover_image_url: book.cover_image_url,
-            notes: book.notes,
-            spice_level: book.spice_level,
-            release_date: book.release_date,
-            isRead: book.isRead || false,
-            isTbr: book.isTbr || false,
-            owned: book.owned === 'Yes',
-            section: section,
+        const bookData = {
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          cover_image_url: book.cover_image_url,
+          notes: book.notes,
+          spice_level: book.spice_level,
+          release_date: book.release_date,
+          isRead: book.isRead || false,
+          isTbr: book.isTbr || false,
+          owned: book.owned === 'Yes',
+          section: section,
+        };
+
+        await prisma.book.upsert({
+          where: { id: book.id },
+          update: bookData,
+          create: {
+            ...bookData,
             genres: {
               connectOrCreate: {
                 where: { name: genreName },
@@ -139,7 +138,6 @@ const createSectionRoutes = (section) => {
     });
     res.json(books);
   });
-  // ... other CRUD routes like POST, PUT, DELETE would go here
 };
 
 createSectionRoutes('library');
