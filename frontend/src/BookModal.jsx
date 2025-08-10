@@ -9,11 +9,10 @@ const tabs = [
   { key: 'upcoming', label: 'Upcoming', endpoint: '/api/upcoming' }
 ];
 
-// THIS IS THE FIX: This helper function will be used on the book card
 const renderSpiceEmojis = (spiceLevelString) => {
   const spiceMap = { "None": 0, "Low": 1, "Medium": 2, "Medium-High": 3, "High": 4, "Extra High": 5 };
   const count = spiceMap[spiceLevelString] || 0;
-  if (count === 0) return null; // Don't show anything for 0 spice
+  if (count === 0) return null;
   return <div className="text-lg">{'🌶️'.repeat(count)}</div>;
 };
 
@@ -47,9 +46,11 @@ export default function App() {
   const handleSaveBook = async (bookData) => {
     try {
       const method = editingBook ? 'PUT' : 'POST';
+      
+      // THIS IS THE FIX: Use `activeTab.endpoint` to build the correct URL
       const url = editingBook
-        ? `${API_URL}/${activeTab.key}/${editingBook.id}`
-        : `${API_URL}/${activeTab.key}`;
+        ? `${API_URL}${activeTab.endpoint}/${editingBook.id}`
+        : `${API_URL}${activeTab.endpoint}`;
 
       const response = await fetch(url, {
         method,
@@ -116,7 +117,6 @@ export default function App() {
                   <h3 className="font-bold text-2xl text-gold-ritual">{book.title}</h3>
                   {book.author && <p className="text-white/80">{book.author}</p>}
                   
-                  {/* THIS IS THE FIX: Using the helper function to display emojis */}
                   <div className="mt-3">
                     {renderSpiceEmojis(book.spice_level)}
                   </div>
