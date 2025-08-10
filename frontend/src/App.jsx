@@ -20,9 +20,9 @@ function Badge({ kind = 'jade', children }) {
   return <span className={cls}>{children}</span>;
 }
 
-function spiceEmojis(level) {
-  const n = Number.isFinite(level) ? Math.max(0, Math.min(5, Number(level))) : 0;
-  return '🌶️'.repeat(n);
+function spiceEmojis(n) {
+  const v = Number.isFinite(n) ? Math.max(0, Math.min(5, Number(n))) : 0;
+  return '🌶️'.repeat(v);
 }
 
 export default function App() {
@@ -35,9 +35,10 @@ export default function App() {
 
   // Filters
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('any');      // any | tbr | read
-  const [spiceFilter, setSpiceFilter] = useState('any');        // any | 0..5
+  const [statusFilter, setStatusFilter] = useState('any'); // any | tbr | read
+  const [spiceFilter, setSpiceFilter] = useState('any');   // any | 0..5
   const [selectedGenres, setSelectedGenres] = useState(new Set());
+  const [tbrFirst, setTbrFirst] = useState(true);
 
   useEffect(() => {
     if (!cache[active.key]) {
@@ -49,10 +50,10 @@ export default function App() {
     }
   }, [active, cache]);
 
-  function handleTabClick(tab) {
-    setActive(tab);
+  const handleTabClick = (t) => {
+    setActive(t);
     setMoveMenuOpenFor(null);
-  }
+  };
 
   const handleOpenModal = (book = null) => {
     setEditingBook(book);
@@ -63,18 +64,32 @@ export default function App() {
     setIsModalOpen(false);
   };
 
+  // ---------- FIXED: robust save with non-JSON/204 handling ----------
+  const parseMaybeJson = async (resp) => {
+    const text = await resp.text();
+    if (!text) return null;
+    try { return JSON.parse(text); } catch { return text; }
+  };
+
   const handleSaveBook = async (bookData) => {
     const method = editingBook ? 'PUT' : 'POST';
     const url = editingBook
       ? `${API_URL}${active.endpoint}/${editingBook.id}`
       : `${API_URL}${active.endpoint}`;
 
-    const response = await fetch(url, {
+    const resp = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bookData)
     });
-    const savedBook = await response.json();
+
+    if (!resp.ok) {
+      const errBody = await parseMaybeJson(resp);
+      throw new Error(typeof errBody === 'string' ? errBody : 'Save failed');
+    }
+
+    // some backends return 204 No Content on PUT
+    const savedBook = resp.status === 204 ? { ...editingBook, ...bookData } : await parseMaybeJson(resp);
 
     if (editingBook) {
       setCache(prev => ({
@@ -89,6 +104,7 @@ export default function App() {
     }
     handleCloseModal();
   };
+  // -------------------------------------------------------------------
 
   const handleDeleteBook = async (bookId) => {
     await fetch(`${API_URL}${active.endpoint}/${bookId}`, { method: 'DELETE' });
@@ -131,50 +147,59 @@ export default function App() {
 
   const rawData = cache[active.key] || [];
 
-  // Build unique genre list
+  // Unique genres (normalize to names)
   const allGenres = useMemo(() => {
     const set = new Set();
     rawData.forEach(b => {
       if (Array.isArray(b.genres)) {
         b.genres.forEach(g => set.add(typeof g === 'string' ? g : g?.name));
       } else if (b.genre) {
-        set.add(b.genre);
+        set.add(typeof b.genre === 'string' ? b.genre : b.genre?.name);
       }
     });
     return [...set].filter(Boolean).sort((a, b) => a.localeCompare(b));
   }, [rawData]);
 
-  // Apply filters
-  const data = useMemo(() => {
+  // Filtered
+  const filtered = useMemo(() => {
     return rawData.filter(b => {
       const isRead = !!b.isRead;
-      const isTbr = b.isTbr ?? !isRead; // if not marked, treat as TBR unless read
+      const isTbr = b.isTbr ?? !isRead;
 
       if (statusFilter === 'tbr' && !isTbr) return false;
       if (statusFilter === 'read' && !isRead) return false;
 
       if (spiceFilter !== 'any') {
-        const target = Number(spiceFilter);
-        const level = Number(b.spice_level ?? 0);
-        if (level !== target) return false;
+        const lvl = Number(b.spice_level ?? 0);
+        if (lvl !== Number(spiceFilter)) return false;
       }
 
       if (selectedGenres.size > 0) {
         const names = Array.isArray(b.genres)
           ? b.genres.map(g => (typeof g === 'string' ? g : g?.name)).filter(Boolean)
-          : b.genre ? [b.genre] : [];
+          : b.genre ? [typeof b.genre === 'string' ? b.genre : b.genre?.name] : [];
         if (!names.some(n => selectedGenres.has(n))) return false;
       }
-
       return true;
     });
   }, [rawData, statusFilter, spiceFilter, selectedGenres]);
 
-  const pill = (active) =>
-    `px-3 py-1 rounded-full border text-sm transition ${
-      active ? 'bg-gold-ritual text-raven-ink border-gold-ritual'
-             : 'btn-phantom'
-    }`;
+  // Sorted (optional TBR first)
+  const data = useMemo(() => {
+    if (!tbrFirst) return filtered;
+    const arr = [...filtered];
+    return arr.sort((a, b) => {
+      const aRead = !!a.isRead, bRead = !!b.isRead;
+      const aTbr  = a.isTbr ?? !aRead;
+      const bTbr  = b.isTbr ?? !bRead;
+      if (aTbr !== bTbr) return aTbr ? -1 : 1;
+      if (aRead !== bRead) return aRead ? 1 : -1;
+      return Number(b.spice_level ?? 0) - Number(a.spice_level ?? 0);
+    });
+  }, [filtered, tbrFirst]);
+
+  const pill = (is) =>
+    `px-3 py-1 rounded-full border text-sm transition ${is ? 'bg-gold-ritual text-raven-ink border-gold-ritual' : 'btn-phantom'}`;
 
   return (
     <div className="min-h-dvh p-6 max-w-6xl mx-auto bg-paper bg-opacity-90">
@@ -189,9 +214,7 @@ export default function App() {
           {tabs.map(t => (
             <button
               key={t.key}
-              className={`px-4 py-2 text-lg rounded-t-[14px] hover:text-white transition-colors duration-300 ${
-                active.key === t.key ? 'text-white border-b-2 border-gold-ritual' : 'text-white/70'
-              }`}
+              className={`px-4 py-2 text-lg rounded-t-[14px] hover:text-white transition-colors duration-300 ${active.key === t.key ? 'text-white border-b-2 border-gold-ritual' : 'text-white/70'}`}
               onClick={() => handleTabClick(t)}
             >
               {t.label}
@@ -200,7 +223,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Collapsible Filters */}
+      {/* Filters (collapsible) */}
       <div className="mt-4">
         <button
           className="btn btn-phantom"
@@ -216,31 +239,23 @@ export default function App() {
             {/* Status */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-white/70 text-sm">Status</span>
-              <div className="inline-flex rounded-full bg-white/5 p-1 border border-white/10">
-                <button className={pill(statusFilter === 'any')} onClick={() => setStatusFilter('any')}>Any</button>
-                <button className={`${pill(statusFilter === 'tbr')} ml-2 ring-1 ring-gold-ritual/40`} onClick={() => setStatusFilter('tbr')}>TBR</button>
-                <button className={`${pill(statusFilter === 'read')} ml-2`} onClick={() => setStatusFilter('read')}>Read</button>
-              </div>
+              <button className={pill(statusFilter === 'any')} onClick={() => setStatusFilter('any')}>Any</button>
+              <button className={`${pill(statusFilter === 'tbr')} ml-1 ring-1 ring-gold-ritual/40`} onClick={() => setStatusFilter('tbr')}>TBR</button>
+              <button className={`${pill(statusFilter === 'read')} ml-1`} onClick={() => setStatusFilter('read')}>Read</button>
             </div>
 
-            {/* Spice filter */}
+            {/* Spice */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-white/70 text-sm">Spice</span>
               <button className={pill(spiceFilter === 'any')} onClick={() => setSpiceFilter('any')}>Any</button>
               {[0,1,2,3,4,5].map(n => (
-                <button
-                  key={n}
-                  className={pill(spiceFilter === n)}
-                  onClick={() => setSpiceFilter(n)}
-                  aria-label={`Spice ${n}`}
-                  title={`Spice ${n}`}
-                >
+                <button key={n} className={pill(spiceFilter === n)} onClick={() => setSpiceFilter(n)} title={`Spice ${n}`}>
                   {spiceEmojis(n) || '0'}
                 </button>
               ))}
             </div>
 
-            {/* Genre filter buttons */}
+            {/* Genres */}
             <div className="flex items-start gap-3 flex-wrap">
               <span className="text-white/70 text-sm mt-1">Genres</span>
               {allGenres.map(g => {
@@ -251,7 +266,7 @@ export default function App() {
                     className={pill(isOn)}
                     onClick={() => {
                       const next = new Set(selectedGenres);
-                      if (isOn) next.delete(g); else next.add(g);
+                      isOn ? next.delete(g) : next.add(g);
                       setSelectedGenres(next);
                     }}
                   >
@@ -259,11 +274,14 @@ export default function App() {
                   </button>
                 );
               })}
-              {(allGenres.length > 0 || selectedGenres.size > 0) && (
-                <button className="ml-2 btn btn-phantom" onClick={() => setSelectedGenres(new Set())}>
-                  Reset
-                </button>
-              )}
+              <button className="ml-2 btn btn-phantom" onClick={() => setSelectedGenres(new Set())}>Reset</button>
+            </div>
+
+            {/* Order */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-white/70 text-sm">Order</span>
+              <button className={pill(!tbrFirst)} onClick={() => setTbrFirst(false)}>Default</button>
+              <button className={pill(tbrFirst)} onClick={() => setTbrFirst(true)}>TBR First</button>
             </div>
           </div>
         )}
@@ -276,37 +294,20 @@ export default function App() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.map((b) => (
-              <article
-                key={b.id}
-                className="card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-glow relative"
-              >
+              <article key={b.id} className="card bg-plum-velvet bg-opacity-20 border border-gold-ritual/20 shadow-lg transition-all duration-300 hover:border-gold-ritual/50 hover:shadow-glow relative">
                 <div className="absolute top-2 right-2 flex gap-2 z-10">
-                  <button
-                    onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)}
-                    className={`btn text-xs px-2 py-1 ${b.isRead ? 'bg-gold-ritual text-raven-ink border-transparent' : 'btn-phantom'}`}
-                  >
-                    Read
-                  </button>
-                  <button
-                    onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)}
-                    className={`btn text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white border-transparent' : 'btn-phantom'}`}
-                  >
-                    TBR
-                  </button>
+                  <button onClick={() => handleUpdateBookStatus(b, 'isRead', !b.isRead)} className={`btn text-xs px-2 py-1 ${b.isRead ? 'bg-gold-ritual text-raven-ink border-transparent' : 'btn-phantom'}`}>Read</button>
+                  <button onClick={() => handleUpdateBookStatus(b, 'isTbr', !b.isTbr)} className={`btn text-xs px-2 py-1 ${b.isTbr ? 'bg-violet-phantom text-white border-transparent' : 'btn-phantom'}`}>TBR</button>
                 </div>
 
                 <img src={b.cover_image_url} alt={b.title} className="w-full h-auto rounded-t-[14px]" />
-
                 <div className="p-4">
                   <h3 className="font-bold text-2xl text-gold-ritual">{b.title}</h3>
                   {b.author && <p className="text-white/80">{b.author}</p>}
 
-                  {/* Spice only */}
                   <div className="mt-3">
                     <Badge kind="rose">
-                      <span aria-label={`Spice ${b.spice_level ?? 0}`}>
-                        {spiceEmojis(b.spice_level) || '0'}
-                      </span>
+                      <span aria-label={`Spice ${b.spice_level ?? 0}`}>{spiceEmojis(b.spice_level) || '0'}</span>
                     </Badge>
                   </div>
 
@@ -323,14 +324,7 @@ export default function App() {
                       {moveMenuOpenFor === b.id && (
                         <div className="absolute top-full right-0 mt-2 w-48 bg-raven-ink rounded-[14px] shadow-lg z-10">
                           {tabs.filter(t => t.key !== active.key).map(t => (
-                            <button
-                              key={t.key}
-                              onClick={() => {
-                                handleMoveBook(b, t.key);
-                                setMoveMenuOpenFor(null);
-                              }}
-                              className="w-full text-left px-4 py-2 text-sm text-white hover:bg-plum-velvet"
-                            >
+                            <button key={t.key} onClick={() => { handleMoveBook(b, t.key); setMoveMenuOpenFor(null); }} className="w-full text-left px-4 py-2 text-sm text-white hover:bg-plum-velvet">
                               Move to {t.label}
                             </button>
                           ))}
@@ -345,10 +339,7 @@ export default function App() {
         )}
       </section>
 
-      <button
-        onClick={() => handleOpenModal()}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gold-ritual text-raven-ink rounded-full shadow-lg flex items-center justify-center text-4xl font-bold"
-      >
+      <button onClick={() => handleOpenModal()} className="fixed bottom-8 right-8 w-16 h-16 bg-gold-ritual text-raven-ink rounded-full shadow-lg flex items-center justify-center text-4xl font-bold">
         +
       </button>
 
